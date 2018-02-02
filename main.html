@@ -19,6 +19,8 @@
 		var c = document.getElementById("game");
 		var ctx = c.getContext("2d");
 		var xMain;
+        var pause = false;
+        var pWait = 0;
 		var sx = 100;
 		var sy = 100;
 		var wx = 50;
@@ -73,6 +75,16 @@
 			else return a;
 		}
 		
+        function pauseSwitch(){
+            if(pause && pWait >= 10){
+                pause = false;
+                pWait = 0;
+                window.requestAnimationFrame(main);
+            } else {
+                pause = true;
+            }
+        }
+        
 		//CHARACHTER
 		function drawChar() {
 			randNum = Math.round(Math.random() * 2);
@@ -147,13 +159,19 @@
 		
 			function keyDownHandler(e) {
 				e.preventDefault();
-				if (e.keyCode == 40 || e.keyCode == 83) dDown = true;
-				if (e.keyCode == 39 || e.keyCode == 68) rDown = true;
-				if (e.keyCode == 38 || e.keyCode == 87) uDown = true;
-				if (e.keyCode == 37 || e.keyCode == 65) lDown = true;
-				if (e.keyCode == 32 && cool == 0) attackb = true;
-				else if (e.keyCode == 90 && cool == 0 && power >= 10) attackz = true;
-				else if (e.keyCode == 88 && cool == 0 && power > 0) attackx = true;
+                if (pause != true){
+                    if (e.keyCode == 40 || e.keyCode == 83) dDown = true;
+				    if (e.keyCode == 39 || e.keyCode == 68) rDown = true;
+				    if (e.keyCode == 38 || e.keyCode == 87) uDown = true;
+				    if (e.keyCode == 37 || e.keyCode == 65) lDown = true;
+                    if (e.keyCode == 80) pauseSwitch();
+				    else if (e.keyCode == 32 && cool == 0) attackb = true;
+				    else if (e.keyCode == 90 && cool == 0 && power >= 10) attackz = true;
+				    else if (e.keyCode == 88 && cool == 0 && power > 0) attackx = true;
+                } else {
+				    if (e.keyCode == 80) pauseSwitch();
+                }
+                
 			}
 		
 			function keyUpHandler(e) {
@@ -166,13 +184,24 @@
 		
 		}
 
+        
+        function pauseMenu(){
+            listen();
+            ctx.font = "30px Arial";
+            ctx.fillText("Pause", 20, 40);
+        }
+        
+        
 		xMain = true;
 		function main(timestamp){
-			ctx.clearRect(0,0,w,h);
-			listen();
-			moveChar();
-			drawChar();
-			if(xMain) window.requestAnimationFrame(main);
+            ctx.clearRect(0,0,w,h);
+            moveChar();
+            drawChar();
+            listen();
+            
+            pWait++;
+			if(xMain && pause != true) window.requestAnimationFrame(main);
+            else pauseMenu();
 		}
 		
 		window.requestAnimationFrame(main);
