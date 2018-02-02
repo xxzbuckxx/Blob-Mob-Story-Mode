@@ -86,18 +86,22 @@
 		
 			ctx.beginPath();
 			ctx.fillStyle = 'black';
+			//Right Eye
 			ctx.arc(sx + wx / 6, sy + wy / 6, (wx / 4 + wy / 4) / 4, 0, 2 * Math.PI);
 			ctx.stroke();
 			ctx.closePath();
 		
+			//Left Eye
 			ctx.beginPath();
 			ctx.arc(sx + wx - wx / 8, sy + wy / 6, (wx / 4 + wy / 4) / 6, 0, 2 * Math.PI);
 			ctx.stroke();
 			ctx.closePath();
-		
+			
+			//Smile
 			ctx.beginPath();
-			ctx.moveTo(sx + wx / 8, sy + wy - wy / 3);
-			ctx.bezierCurveTo(sx + wy / 8, sy + wy, sx + wx - wy / 8, sy + wy, sx + wx - wy / 8, sy + wy - wy / 3);
+			ctx.moveTo(sx + wx / 8, sy + wy - wy / 4);
+			//ctx.moveTo(sx + wx / 8, sy + wy - wy / 3);
+			ctx.bezierCurveTo(sx + wy / 8, sy + wy / 2, sx + wx - wy / 8, sy + wy / 2, sx + wx - wy / 8, sy + wy - wy / 4);
 			ctx.stroke();
 			ctx.closePath();
 		}
@@ -165,7 +169,6 @@
 			}
 		
 		}
-
 		xMain = true;
 		function main(timestamp){
 			ctx.clearRect(0,0,w,h);
