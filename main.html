@@ -8,16 +8,13 @@
 </head>
 
 <body>
-	
-	<h1>Game</h1>
-	
 	<div id="window" >
-		<canvas id="game" width="800" height="800">Sorry your browser does not support the HTML Canvas Option.</canvas>
+		<canvas id="game" width="800" height="800" style="border: 1px solid red">Sorry your browser does not support the HTML5 Canvas.</canvas>
 	</div>
 	
 <script>
-		var c = document.getElementById("game");
-		var ctx = c.getContext("2d");
+		const c = document.getElementById("game");
+		const ctx = c.getContext("2d");
 		var xMain;
 		var sx = 100;
 		var sy = 100;
@@ -73,7 +70,20 @@
 			else return a;
 		}
 		
-		//CHARACHTER
+        function resize() {
+            // Lookup the size the browser is displaying the canvas.
+            var cw = window.innerWidth;
+            var ch = window.innerHeight;
+            
+            // Check if the canvas is not the same size.
+            if (w  != cw || h != ch) {
+                
+                // Make the canvas the same size
+                c.width  = cw;
+                c.height = ch;
+            }
+        }
+		//CHARACTER
 		function drawChar() {
 			randNum = Math.round(Math.random() * 2);
 			//randomColor = colors[randNum];
@@ -172,12 +182,13 @@
 		xMain = true;
 		function main(timestamp){
 			ctx.clearRect(0,0,w,h);
+            resize(c);
 			listen();
 			moveChar();
 			drawChar();
 			if(xMain) window.requestAnimationFrame(main);
 		}
-		
+    
 		window.requestAnimationFrame(main);
 	</script>
 	
