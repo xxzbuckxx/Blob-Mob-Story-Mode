@@ -181,40 +181,38 @@
 		}
 		
 		function drawStage() {
-    ctx.fillStyle = '#fffbf9';
-    ctx.fillRect(0, 0, w, h);
-    //ctx.drawImage(background, 0, 0, w, h);
-    ctx.lineWidth = 10;
-    ctx.strokeRect(0, 0, w, h);
-}
-
-function drawHealth() {
-    ctx.fillStyle = 'black';
-    ctx.fillRect(w - 250, 10, 240, 20);
-    ctx.fillStyle = randomColor;
-    ctx.font = "10px monospace";
-    ctx.fillText(health + "/100", w / 2 + 100, 23);
-    ctx.fillRect(w / 2 + 1, 11, (health / 100) * 238, 18);
-}
-
-function drawPower() {
-    ctx.fillStyle = 'black';
-    ctx.fillRect(w - w * (1 / 4), 40, 115, 20);
-    ctx.fillStyle = '#33cc33';
-    ctx.font = "10px monospace";
-    ctx.fillText(power + "/50", w - w * (1 / 4) + 52, 53);
-    ctx.fillRect(w - w * (1 / 4) + 1, 41, (power / 50) * 113, 18);
-}
-
-
-		function drawCool() {
+            ctx.fillStyle = '#fffbf9';
+            ctx.fillRect(0, 0, w, h);
+            //ctx.drawImage(background, 0, 0, w, h);
+            ctx.lineWidth = 10;
+            ctx.strokeRect(0, 0, w, h);
+        }
+        
+        function drawHealth() {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(10, 10, w - 20, 20);
+            ctx.fillStyle = randomColor;
+            ctx.font = "10px monospace";
+            ctx.fillText(health + "/100", w / 2 - 15, 23);
+            ctx.fillRect(11, 11, (health / 100) * (w - 22), 18);
+        }
+    
+        function drawCool() {
     		ctx.fillStyle = 'black';
-    		ctx.fillRect(w / 2, 40, 115, 20);
+    		ctx.fillRect(w / 2, 35, w / 4 - 2.5, 20);
    			ctx.fillStyle = 'blue';
-    		ctx.fillRect(w / 2 + 1, 41, 113 - (cool / 50) * 113, 18);
+    		ctx.fillRect(w / 2 + 1, 36, ((50 - cool) / 50) * (w / 4 - 5.25), 18);
 		}
-
-
+        
+        function drawPower() {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(w * 3 / 4 + 5, 35, w / 4 - 15.5, 20);
+            ctx.fillStyle = '#33cc33';
+            ctx.font = "10px monospace";
+            ctx.fillText(power + "/50", w - w * (1 / 8) - 15, 49);
+            ctx.fillRect(w - w * (1 / 4) + 6, 36, (power / 50) * (w / 4 - 17.5), 18);
+        }
+    
 		function drawScore() {
     		ctx.fillStyle = 'black';
     		ctx.font = "20px monospace";
