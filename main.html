@@ -8,7 +8,7 @@
 
 <body style="padding:0px; background-color: #000">
 	<div id="window" >
-		<canvas id="game" width="800" height="800" style="border: 1px solid red;margin:0px">Sorry your browser does not support the HTML5 Canvas.</canvas>
+		<canvas id="game" width="800" height="800" style="margin:0px">Sorry your browser does not support the HTML5 Canvas.</canvas>
 	</div>
 	
 <script>
@@ -80,6 +80,7 @@
                 // Make the canvas the same size
                 c.width  = cw - 18;
                 c.height = ch - 22;
+                sx = (sx * c.width) / w;
 				w = c.width;
 				h = c.height;
             }
