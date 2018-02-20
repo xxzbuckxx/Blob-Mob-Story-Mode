@@ -1,6 +1,6 @@
 body {
     padding: 0px;
-    background-color: black;
+    background-color: #fff9fc;
 }
 
 .menu {
@@ -11,10 +11,18 @@ body {
 }
 
 .header {
-    background-color: #fff9fc;
+	color: #ffd6cc;
+	text-decoration: underline;
     text-align: center;
     grid-row: 1/1;
     grid-column: 1/4;
+}
+
+h2 {
+	color: white;
+	text-decoration:underline;
+	text-align: center;
+	font-family:Baskerville, "Palatino Linotype", Palatino, "Century Schoolbook L", "Times New Roman", serif;
 }
 
 .content-left {
