@@ -3,15 +3,33 @@
 <head>
 <meta charset="utf-8">
 <title>main</title>
-
+<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
-<body style="padding:0px; background-color: #000">
-	<div id="window" >
-		<canvas id="game" width="800" height="800" style="margin:0px">Sorry your browser does not support the HTML5 Canvas.</canvas>
+<body>
+    <div class="menu">
+        <div class="header">
+            <h1>Blob Mob <i>the whole story</i></h1>
+        </div>
+        <div class="content-left">
+        
+        </div>
+        <div class="content-right">
+        
+        </div>
+    </div>
+	<div class="window" >
+		<canvas id="game" width="800" height="800">Sorry your browser does not support the HTML5 Canvas.</canvas>
 	</div>
-	
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
+        
+        $('.menu').click(function(){
+            $(this).fadeOut('slow', function(){
+                $('.window').show();
+            });
+        });
+    
 		const c = document.getElementById("game");
 		const ctx = c.getContext("2d");
 		var xMain;
