@@ -5,36 +5,48 @@ body {
 
 .menu {
     display: grid;
-    grid-template-columns: 1fr 10px 1fr;
-    grid-template-rows: 1fr 10px 1fr;
+    grid-template-columns: 10% 1fr 5px 1fr 10%;
+    grid-template-rows: 1fr 1fr;
     font-family: fantasy;
 }
 
 .header {
 	color: #ffd6cc;
+    font-size: 30px;
 	text-decoration: underline;
     text-align: center;
     grid-row: 1/1;
-    grid-column: 1/4;
+    grid-column: 1/6;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+hr {
+    margin-top: 0px;
+    border: 5px solid #ffd6cc;
+    width: 80%;
 }
 
 h2 {
-	color: white;
+    color: #ff9980;
+    font-size: 30px;
 	text-decoration:underline;
 	text-align: center;
-	font-family:Baskerville, "Palatino Linotype", Palatino, "Century Schoolbook L", "Times New Roman", serif;
+	font-family: Trebuchet MS;
 }
 
 .content-left {
-    grid-row: 3/4;
-    grid-column: 1/2;
-    background-color: red;
+    grid-row: 2/3;
+    grid-column: 2/3;
+    background: linear-gradient(to bottom right, #fff9fc, #ffd6cc);
 }
 
 .content-right {
-    grid-row: 3/4;
-    grid-column: 3/4;
-    background-color: blue;
+    grid-row: 2/3;
+    grid-column: 4/5;
+    background: linear-gradient(to top left, #fff9fc, #ffd6cc);
 }
 
 .window {
