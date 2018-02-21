@@ -38,12 +38,14 @@ h2 {
 }
 
 .content-left {
+  min-width: 300px;
   grid-row: 2/3;
   grid-column: 2/3;
   background: linear-gradient(to bottom right, #fff9fc, #ffebe6);
 }
 
 .content-right {
+  min-width: 300px;
   grid-row: 2/3;
   grid-column: 4/5;
   background: linear-gradient(to top left, #fff9fc, #ffebe6);
