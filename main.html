@@ -13,7 +13,7 @@
       <div class="header">
         <h1>Blob Mob <i>the whole story</i></h1>
         <hr>
-        <canvas id="animation" width="800" height="400">Click To start</canvas>
+        <canvas id="animation" width="400" height="300">Click To start</canvas>
         <hr>
       </div>
       <div class="content-left">
@@ -32,7 +32,7 @@
       const mc = document.getElementById("animation");
       const mctx = mc.getContext("2d");
       const menuVisible = $('#animation').is(':visible');
-			var x = 0;
+			var x = 50;
       var y = 0;
 
       if (menuVisible) {
@@ -46,7 +46,7 @@
       	mctx.fillStyle = 'black';
         mctx.font = "50px comic sans ms"
         const messg = "CLick to play";
-        mctx.fillText(messg, mc.width/3 + x, mc.height/2 + y);
+        mctx.fillText(messg, x, mc.height/2 + y);
         if(menuVisible) window.requestAnimationFrame(menuAnim);
       }
 
