@@ -75,6 +75,7 @@ function menuDrawChar(){
 
     mctx.beginPath();
     mctx.fillStyle = 'black';
+    
     //Right Eye
     mctx.arc(msx + mwx / 6, msy + mwy / 6, (mwx / 4 + mwy / 4) / 4, 0, 2 * Math.PI);
     mctx.stroke();
@@ -102,14 +103,19 @@ $('#animation').click(function() {
         window.requestAnimationFrame(main);
     });
 });
-
+       </script>
+       
+       
+       <script>
 const c = document.getElementById("game");
 const ctx = c.getContext("2d");
 var xMain;
-var sx = 100;
-var sy = 100;
+var sx = c.width/2-50;
+var sy = c.height/2-50;
 var wx = 50;
 var wy = 50;
+var ssx = 0; //Stage placement x
+var ssy = 0; //Stage placement y
 var w = c.width;
 var h = c.height;
 var randomColor = '#ffd6cc';
@@ -131,7 +137,9 @@ var damaging;
 var speed = 1.5;
 var regeneration = false;
 var Otime = 0;
-
+const background = new Image();
+background.src = "level_maps/test_map.png";
+    
 //HELPER FUNCTIONS
 function random(a) {
     var rand = Math.random() * 10;
@@ -176,6 +184,7 @@ function resize() {
         h = c.height;
     }
 }
+           
 //CHARACTER
 function drawChar() {
     ctx.fillStyle = randomColor;
@@ -207,23 +216,41 @@ function drawChar() {
 
 function moveChar() {
     if (dDown && regeneration == false) {
-        sy += speed;
-        sx = random(sx);
+        if(true){
+            ssy--;
+        } else {
+            sy += speed;
+            sx = random(sx);
+        }
         recent = 'down';
     }
     if (rDown && regeneration == false) {
-        sx += speed;
-        sy = random(sy)
+        if(true){
+            ssx--;
+        } else {
+            sx += speed;
+            sy = random(sy)
+        }
         recent = 'right';
     }
     if (uDown && regeneration == false) {
-        sy -= speed;
-        sx = random(sx);
+        if(true){
+            ssy++;
+        } else {
+            sy -= speed;
+            sx = random(sx);
+        }
+        
         recent = 'up';
     }
     if (lDown && regeneration == false) {
-        sx -= speed;
-        sy = random(sy);
+        if(true){
+            ssx++;
+        } else {
+            sx -= speed;
+            sy = random(sy);
+        }
+        
         recent = 'left';
     }
     /*if (attackb && regeneration == false) {
@@ -271,9 +298,9 @@ function listen() {
 function drawStage() {
     ctx.fillStyle = '#fffbf9';
     ctx.fillRect(0, 0, w, h);
-    //ctx.drawImage(background, 0, 0, w, h);
-    ctx.lineWidth = 10;
-    ctx.strokeRect(0, 0, w, h);
+    ctx.scale(5,5);
+    ctx.drawImage(background, ssx, ssy, w, h);
+    ctx.scale(.2,.2);
 }
 
 function drawHealth() {
@@ -321,6 +348,6 @@ function main(timestamp) {
     drawChar();
     if (xMain) window.requestAnimationFrame(main);
 }
-      </script>
+       </script>
    </body>
 </html>
