@@ -216,8 +216,8 @@ function drawChar() {
 
 function moveChar() {
     if (dDown && regeneration == false) {
-        if(true){
-            ssy--;
+        if(sy >= h/2 - wy && (ssy + h*2 > h)){
+            ssy -= speed; //Move Background up
         } else {
             sy += speed;
             sx = random(sx);
@@ -225,8 +225,8 @@ function moveChar() {
         recent = 'down';
     }
     if (rDown && regeneration == false) {
-        if(true){
-            ssx--;
+        if((sx >= w/2-wx) && (ssx + w*2 > w)){
+            ssx -= speed; //Move Background left
         } else {
             sx += speed;
             sy = random(sy)
@@ -234,18 +234,17 @@ function moveChar() {
         recent = 'right';
     }
     if (uDown && regeneration == false) {
-        if(true){
-            ssy++;
+        if(ssy < 0 && sy <= h/2-wy){
+            ssy += speed; //Move Background down
         } else {
             sy -= speed;
             sx = random(sx);
         }
-        
         recent = 'up';
     }
     if (lDown && regeneration == false) {
-        if(true){
-            ssx++;
+        if(ssx < 0 && sx <= w/2-wx){
+            ssx += speed; //Move Background right
         } else {
             sx -= speed;
             sy = random(sy);
@@ -298,9 +297,9 @@ function listen() {
 function drawStage() {
     ctx.fillStyle = '#fffbf9';
     ctx.fillRect(0, 0, w, h);
-    ctx.scale(5,5);
-    ctx.drawImage(background, ssx, ssy, w, h);
-    ctx.scale(.2,.2);
+    //ctx.scale(5,5);
+    ctx.drawImage(background, ssx, ssy, w*2, h*2);
+    //ctx.scale(.2,.2);
 }
 
 function drawHealth() {
