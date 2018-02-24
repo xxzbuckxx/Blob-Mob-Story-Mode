@@ -139,6 +139,7 @@ var regeneration = false;
 var Otime = 0;
 const background = new Image();
 background.src = "level_maps/test_map.png";
+const stageScale = 5;
     
 //HELPER FUNCTIONS
 function random(a) {
@@ -179,7 +180,8 @@ function resize() {
         // Make the canvas the same size
         c.width = cw - 18;
         c.height = ch - 22;
-        sx = (sx * c.width) / w;
+        sx = (sx / w) * c.width;
+        wx = (wx / w) * c.width;
         w = c.width;
         h = c.height;
     }
@@ -216,7 +218,7 @@ function drawChar() {
 
 function moveChar() {
     if (dDown && regeneration == false) {
-        if(sy >= h/2 - wy && (ssy + h*2 > h)){
+        if(sy >= h/2 - wy && (ssy + h*stageScale > h)){
             ssy -= speed; //Move Background up
         } else {
             sy += speed;
@@ -225,7 +227,7 @@ function moveChar() {
         recent = 'down';
     }
     if (rDown && regeneration == false) {
-        if((sx >= w/2-wx) && (ssx + w*2 > w)){
+        if((sx >= w/2-wx) && (ssx + w*stageScale > w)){
             ssx -= speed; //Move Background left
         } else {
             sx += speed;
@@ -297,9 +299,7 @@ function listen() {
 function drawStage() {
     ctx.fillStyle = '#fffbf9';
     ctx.fillRect(0, 0, w, h);
-    //ctx.scale(5,5);
-    ctx.drawImage(background, ssx, ssy, w*2, h*2);
-    //ctx.scale(.2,.2);
+    ctx.drawImage(background, ssx, ssy, w*stageScale, h*stageScale);
 }
 
 function drawHealth() {
