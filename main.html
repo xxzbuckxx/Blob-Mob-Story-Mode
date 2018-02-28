@@ -29,42 +29,45 @@
            const mc = document.getElementById("animation");
            const mctx = mc.getContext("2d");
            const menuVisible = $('#animation').is(':visible');
-           var x = 50;
-           var y = 0;
            var msx = 20;
            var msy = 20;
            var mwx = 50;
            var mwy = 50;
+           var centDist = 0;
            
            if (menuVisible) {
                window.requestAnimationFrame(menuAnim);
            }
            
-           function menuAnim(ts) {
+           function menuAnim(timestamp) {
                mctx.clearRect(0, 0, mc.width, mc.height);
                
                //menuDrawChar();
                
                mctx.fillStyle = 'black';
                mctx.font = "50px comic sans ms";
-               const messg = "CLiCk tO pLaY";
+               const messg = "CLiCk  tO  pLaY";
                var space = 0;
-               messg.split('').forEach(function(e) {
-                   //if (ts % 2 === 0) {
-                   x = mcrandom(x);
-                   y = mcrandom(y);
-                   //}
-                   mctx.fillText(e, x + space, mc.height / 2 + y);
-                   space += mctx.measureText(e).width + 3;
-               });
+               
+               //Wobble letters up and down
+               for(e = 0; e < messg.length; e++) {
+                   var x = 50;
+                   var y = 0;
+                   y = (e % 2 === 0) ? y += (centDist) : y -= (centDist);
+                   if((timestamp % 4000) <= 2000) centDist+= ((timestamp % 2000) <= 1000) ? 0.01 : -0.01;
+                   else centDist+= ((timestamp % 2000) <= 1000) ? -0.01 : 0.01;
+
+                   mctx.fillText(messg.slice(e,e+1), x + space, mc.height / 2 + y);
+                   space += mctx.measureText(messg.slice(e,e+1)).width + 6;
+               }
                
                if (menuVisible) window.requestAnimationFrame(menuAnim);
            }
            
            function mcrandom(a) {
                var rand = Math.random() * 10;
-               if (rand > 5) return a + 0.03;
-               else return a - 0.03;
+               if (rand > 5) return a + 1;
+               else return a - 1;
            }
            
            function menuDrawChar(){
