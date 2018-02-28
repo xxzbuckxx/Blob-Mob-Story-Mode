@@ -3,35 +3,34 @@
 
 const c = document.getElementById("game");
 const ctx = c.getContext("2d");
-var xMain = true;
-var sx = c.width/2-50;
-var sy = c.height/2-50;
-var wx = 50;
-var wy = 50;
+var xMain = true; //Main session
+var sx = c.width / 2 - 50; //Player placement x
+var sy = c.height / 2 - 50; //Player placement y
+var wx = 50; //Player width
+var wy = 50; //Player height
 var ssx = 0; //Stage placement x
 var ssy = 0; //Stage placement y
-var w = c.width;
-var h = c.height;
-var randomColor = '#ffd6cc';
-var rDown = false;
-var lDown = false;
-var uDown = false;
-var dDown = false;
-var attackb = false;
-var attackz = false;
-var attackx = false;
+var w = c.width; //Canvas width
+var h = c.height; //Canvas height
+var playerColor = '#ffd6cc'; //Player color
+var rDown = false; //Right arrow or D is being pressed
+var lDown = false; //Left arrow or A
+var uDown = false; //Up arrow or W
+var dDown = false; //Down arrow or S
+var attackb = false; //Basic attack is being executed (space pressed)
+var attackz = false; //Push attack (Q pressed)
+var attackx = false; //Regenerate (E pressed)
 var power = 50;
 var cool = 0;
 var health = 100;
 var dead = false;
 var score = 0;
-var highscore = localStorage.getItem("highscore");
-var recent = 'right';
+var highscore = localStorage.getItem("highscore"); //Highscore stored locally in cookies
+var recent = 'right'; //Recent direction moved (right, left, up, down)
 var damaging;
-var speed = 1.5;
+var speed = 1.5; //Enemy speed
 var regeneration = false;
-var Otime = 0;
-const background = new Image();
+const background = new Image(); //Level map
 background.src = "level_maps/test_map.png";
 const stageScale = 5;
 
@@ -75,7 +74,6 @@ function resize() {
         c.width = cw - 18;
         c.height = ch - 22;
         sx = (sx / w) * c.width;
-        wx = (wx / w) * c.width;
         w = c.width;
         h = c.height;
     }
@@ -83,7 +81,7 @@ function resize() {
 
 //CHARACTER
 function drawChar() {
-    ctx.fillStyle = randomColor;
+    ctx.fillStyle = playerColor;
     ctx.fillRect(sx, sy, wx, wy);
     
     ctx.lineWidth = 1;
@@ -199,7 +197,7 @@ function drawStage() {
 function drawHealth() {
     ctx.fillStyle = 'black';
     ctx.fillRect(10, 10, w - 20, 20);
-    ctx.fillStyle = randomColor;
+    ctx.fillStyle = playerColor;
     ctx.font = "10px monospace";
     ctx.fillText(health + "/100", w / 2 - 15, 23);
     ctx.fillRect(11, 11, (health / 100) * (w - 22), 18);
@@ -228,17 +226,28 @@ function drawScore() {
     ctx.fillText("High-Score: " + highscore, 18, 58, w / 2);
 }
 
+function drawHUD(){
+    drawStage();
+    
+    drawHealth();
+    
+    drawPower();
+    
+    drawCool();
+}
+
 function main(timestamp) {
     ctx.clearRect(0, 0, w, h);
     
     resize(c);
     
-    drawStage();
-    drawHealth();
-    drawPower();
-    drawCool();
+    drawHUD();
+    
     listen();
+    
     moveChar();
+    
     drawChar();
+    
     if (xMain) window.requestAnimationFrame(main);
 }
