@@ -35,31 +35,33 @@ background.src = "level_maps/test_map.png";
 const stageScale = 5;
 
 //HELPER FUNCTIONS
-function random(a) {
-    var rand = Math.random() * 10;
-    if (rand - 5 > 0 && a < 60) return a + 0.5;
-    else if (rand - 5 <= 0 && a > 40) return a - 0.5;
-    else return a;
-}
+var random = {
+	reg: function(a) {
+    	var rand = Math.random() * 10;
+    	if (rand - 5 > 0 && a < 60) return a + 0.5;
+    	else if (rand - 5 <= 0 && a > 40) return a - 0.5;
+    	else return a;
+	},
 
-function srandom(a) {
-    var rand = Math.random() * 10;
-    if (rand > 5) return a + 0.2;
-    else return a - 0.2;
-}
+	s: function(a) {
+    	var rand = Math.random() * 10;
+    	if (rand > 5) return a + 0.2;
+    	else return a - 0.2;
+	},
 
-function mxrandom(a) {
-    var rand = Math.random() * 10;
-    if (rand > 5 && a < w - wx - 10) return a + 0.1;
-    else if (rand <= 5 && a > 10) return a - 0.1;
-    else return a;
-}
+	mx: function(a) {
+    	var rand = Math.random() * 10;
+    	if (rand > 5 && a < w - wx - 10) return a + 0.1;
+    	else if (rand <= 5 && a > 10) return a - 0.1;
+    	else return a;
+	},
 
-function myrandom(a) {
-    var rand = Math.random() * 10;
-    if (rand > 5 && a > 10) return a - 0.1;
-    else if (rand <= 5 && a < h - wy - 10) return a + 0.1;
-    else return a;
+	my: function(a) {
+    	var rand = Math.random() * 10;
+    	if (rand > 5 && a > 10) return a - 0.1;
+    	else if (rand <= 5 && a < h - wy - 10) return a + 0.1;
+    	else return a;
+	}
 }
 
 function resize() {
@@ -114,7 +116,7 @@ function moveChar() {
             ssy -= speed; //Move Background up
         } else {
             sy += speed;
-            sx = random(sx);
+            sx = random.reg(sx);
         }
         recent = 'down';
     }
@@ -123,7 +125,7 @@ function moveChar() {
             ssx -= speed; //Move Background left
         } else {
             sx += speed;
-            sy = random(sy);
+            sy = random.reg(sy);
         }
         recent = 'right';
     }
@@ -132,7 +134,7 @@ function moveChar() {
             ssy += speed; //Move Background down
         } else {
             sy -= speed;
-            sx = random(sx);
+            sx = random.reg(sx);
         }
         recent = 'up';
     }
@@ -141,7 +143,7 @@ function moveChar() {
             ssx += speed; //Move Background right
         } else {
             sx -= speed;
-            sy = random(sy);
+            sy = random.reg(sy);
         }
         
         recent = 'left';
@@ -156,10 +158,10 @@ function moveChar() {
     regeneration = false;
     }
     */
-    sx = srandom(sx);
-    sy = srandom(sy);
-    wx = random(wx);
-    wy = random(wy);
+    sx = random.s(sx);
+    sy = random.s(sy);
+    wx = random.reg(wx);
+    wy = random.reg(wy);
     
 }
 
