@@ -189,16 +189,14 @@ function listen() {
 }
 
 var gonce = true;
-var imageData;
 function drawStage() {
     ctx.fillStyle = '#fffbf9';
     ctx.fillRect(0, 0, w, h);
     ctx.drawImage(background, ssx, ssy, w*stageScale, h*stageScale);
-    if(gonce){
-        imageData = ctx.getImageData(10, 10, 50, 50);
-        //ctx.putImageData(imgData, 10, 70);
-        gonce = false;
-    }
+    //if(gonce){
+        //ctx.putImageData(imgData,10,70);
+        //gonce = false;
+    //}
 }
 
 function drawHealth() {
@@ -255,6 +253,8 @@ function main(timestamp) {
     moveChar();
     
     drawChar();
+    
+    ctx.getImageData(0,0,0,0);
     
     if (xMain) window.requestAnimationFrame(main);
 }
