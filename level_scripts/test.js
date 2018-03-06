@@ -32,11 +32,11 @@ var recent = 'right'; //Recent direction moved (right, left, up, down)
 var damaging;
 var speed = 1.5; //Enemy speed
 var regeneration = false;
-const background = new Image(); //Level map
-background.src = "level_maps/test_map.png";
+const layer1 = new Image(); //Level map
+layer1.src = "level_maps/test_map.png";
 const stageScale = 5;
 
-//HELPER FUNCTIONS
+/*---------------HELPER FUNCTIONS---------------*/
 var random = {
 	reg: function(a) {
     	var rand = Math.random() * 10;
@@ -83,8 +83,11 @@ function resize() {
         h = c.height;
     }
 }
+/*----------------------------------------------*/
 
-//CHARACTER
+
+
+/*-------------------CHARACTER-------------------*/
 var character = {
     edgeDetect: function(dir) {
         var imgdata = ctx.getImageData(sx-1,sy-1,1,1);
@@ -265,15 +268,28 @@ var character = {
         ctx.closePath();
     }
 };
+/*-----------------------------------------------*/
 
+
+
+/*---------------HEADS UP DISPLAY----------------*/
 var hud = {
-    drawStage: function() {
-        ctx.fillStyle = '#fffbf9';
-        ctx.fillRect(0, 0, w, h);
-        ctx.drawImage(background, ssx, ssy, w*stageScale, h*stageScale);
+    stage: function(layer) {
+        switch(layer){
+            case 1:
+                ctx.fillStyle = '#fffbf9';
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(layer1, ssx, ssy, w*stageScale, h*stageScale);
+                break;
+            default:
+                ctx.fillStyle = '#fffbf9';
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(layer1, ssx, ssy, w*stageScale, h*stageScale);
+                break;
+        }
     },
     
-    drawHealth: function() {
+    health: function() {
         ctx.fillStyle = 'black';
         ctx.fillRect(10, 10, w - 20, 20);
         ctx.fillStyle = playerColor;
@@ -282,14 +298,14 @@ var hud = {
         ctx.fillRect(11, 11, (health / 100) * (w - 22), 18);
     },
     
-    drawCool: function() {
+    cool: function() {
         ctx.fillStyle = 'black';
         ctx.fillRect(w / 2, 35, w / 4 - 2.5, 20);
         ctx.fillStyle = 'blue';
         ctx.fillRect(w / 2 + 1, 36, ((50 - cool) / 50) * (w / 4 - 5.25), 18);
     },
     
-    drawPower: function() {
+    power: function() {
         ctx.fillStyle = 'black';
         ctx.fillRect(w * 3 / 4 + 5, 35, w / 4 - 15.5, 20);
         ctx.fillStyle = '#33cc33';
@@ -298,31 +314,35 @@ var hud = {
         ctx.fillRect(w - w * (1 / 4) + 6, 36, (power / 50) * (w / 4 - 17.5), 18);
     },
     
-    drawScore: function() {
+    score: function() {
         ctx.fillStyle = 'black';
         ctx.font = "20px monospace";
         ctx.fillText("Score: " + score, 18, 28, w / 2);
         ctx.fillText("High-Score: " + highscore, 18, 58, w / 2);
     },
     
-    drawAll: function() {
+    full: function() {
         
-        hud.drawHealth();
+        hud.health();
         
-        hud.drawPower();
+        hud.power();
         
-        hud.drawCool();
+        hud.cool();
     }
 };
+/*-----------------------------------------------*/
 
+
+
+/*-----------------------SESSIONS------------------------*/
 function main(timestamp) {
     ctx.clearRect(0, 0, w, h);
     
     resize(c);
     
-    hud.drawStage();
+    hud.stage(1);
     
-    hud.drawAll();
+    hud.full();
     
     character.listen();
     
@@ -332,3 +352,4 @@ function main(timestamp) {
     
     if (xMain) window.requestAnimationFrame(main);
 }
+/*-----------------------------------------------*/
