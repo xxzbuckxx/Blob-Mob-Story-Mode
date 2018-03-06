@@ -90,9 +90,12 @@ function edgeDetect(dir) {
             imgdata = ctx.getImageData(sx+p,sy+wy+2,1,1);
             pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
             if(pixColor == "rgba(0,0,0,255)"){
+                /*
+                    Detection test
                 ctx.fillStyle = "red";
                 ctx.fillRect(20, 40, 20, 20);
                 ctx.fillText(pixColor, 20, 90 + p*5);
+                */
                 
                 return false;
             }
@@ -102,9 +105,12 @@ function edgeDetect(dir) {
             imgdata = ctx.getImageData(sx+wx+2,sy+p,1,1);
             pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
             if(pixColor == "rgba(0,0,0,255)"){
+                /*
+                    Detection test
                 ctx.fillStyle = "red";
                 ctx.fillRect(120, 40, 20, 20);
                 ctx.fillText(pixColor, 120, 90 + p*5);
+                */
                 
                 return false;
             }
@@ -114,9 +120,12 @@ function edgeDetect(dir) {
             imgdata = ctx.getImageData(sx+p,sy-2,1,1);
             pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
             if(pixColor == "rgba(0,0,0,255)"){
+                /*
+                    Detection test
                 ctx.fillStyle = "red";
                 ctx.fillRect(220, 40, 20, 20);
                 ctx.fillText(pixColor, 220, 90 + p*5);
+                */
                 
                 return false;
             }
@@ -126,9 +135,12 @@ function edgeDetect(dir) {
             imgdata = ctx.getImageData(sx-2,sy+p,1,1);
             pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
             if(pixColor == "rgba(0,0,0,255)"){
+                /*
+                    Detection test
                 ctx.fillStyle = "red";
                 ctx.fillRect(320, 40, 20, 20);
                 ctx.fillText(pixColor, 320, 90 + p*5);
+                */
                 
                 return false;
             }
