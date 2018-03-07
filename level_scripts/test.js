@@ -5,23 +5,34 @@
 
 const c = document.getElementById("game");
 const ctx = c.getContext("2d");
+var w = c.width; //Canvas width
+var h = c.height; //Canvas height
 var xMain = true; //Main session
+var time;
 var sx = 30; //Player placement x
 var sy = 100; //Player placement y
 var wx = 50; //Player width
 var wy = 50; //Player height
 var ssx = 0; //Stage placement x
 var ssy = 0; //Stage placement y
-var w = c.width; //Canvas width
-var h = c.height; //Canvas height
 var playerColor = '#ffd6cc'; //Player color
+var esx = 0; //Enemy object x cordinate
+var esy = 0; //Enemy object y cordinate
+var ewx = 50; //Enemy object width
+var ewy = 50; //Enemy object height;
+var randNum = 0;
+var colors = ['#ffd6cc', '#ffc2b3', '#ffad99', '#ff9980', '#ff9980']; //Player color strobe
+var ecolors = ['#81ea25', '#6bba27', '#96e84e', '#abf966', '#b9f981']; //Enemy color strobe
+var ebcolors = ['#f45642', '#e06757', '#f9543e', '#dd351f', '#ed452f']; //Enemy Boss color strobe
 var rDown = false; //Right arrow or D is being pressed
 var lDown = false; //Left arrow or A
 var uDown = false; //Up arrow or W
 var dDown = false; //Down arrow or S
+var pause = true;
 var attackb = false; //Basic attack is being executed (space pressed)
 var attackz = false; //Push attack (Q pressed)
 var attackx = false; //Regenerate (E pressed)
+var enemies; //Enemies array
 var power = 50;
 var cool = 0;
 var health = 100;
@@ -33,8 +44,10 @@ var damaging;
 var speed = 1.5; //Enemy speed
 var regeneration = false;
 const layer1 = new Image(); //Level map
-layer1.src = "level_maps/test_map.png";
+    layer1.src = "level_maps/test_map.png";
 const stageScale = 5;
+const layer2 = new Image();
+    layer2.src = "level_maps/test_map-2nd.png";
 
 /*---------------HELPER FUNCTIONS---------------*/
 var random = {
@@ -63,7 +76,110 @@ var random = {
     	if (rand > 5 && a > 10) return a - 0.1;
     	else if (rand <= 5 && a < h - wy - 10) return a + 0.1;
     	else return a;
-	}
+	},
+    
+    randomLocation: function(a) {
+        if (Math.random() * 10 >= 5) {
+            if (Math.random() * 10 >= 5) {
+                a.esx = Math.random() * w;
+                a.esy = -50 * Math.random() - 20;
+            } else {
+                a.esx = Math.random() * w;
+                a.esy = h + 50 * Math.random() + 20;
+            }
+        } else {
+            if (Math.random() * 10 >= 5) {
+                a.esx = -50 * Math.random() - 20;
+                a.esy = Math.random() * h;
+            } else {
+                a.esx = w + 50 * Math.random() + 20;
+                a.esy = Math.random() * h;
+            }
+        }
+    }
+};
+
+var tracker = {
+    edgeDetect: function(dir, posX, posY, WidX, WidY) {
+        var imgdata = ctx.getImageData(posX-1,posY-1,1,1);
+        var pixColor;
+        var p;
+        if (dir == 'down'){
+            for(p = 0; p < WidX; p++){
+                imgdata = ctx.getImageData(posX+p,posY+WidY+2,1,1);
+                pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
+                if(pixColor == "rgba(0,0,0,255)"){
+                    /*
+                        Detection test
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(20, 40, 20, 20);
+                    ctx.fillText(pixColor, 20, 90 + p*5);
+                    */
+        
+                    return false;
+                }
+            }
+        } else if(dir == 'right'){
+            for(p = 0; p < WidY; p++){
+                imgdata = ctx.getImageData(posX+WidX+2,sy+p,1,1);
+                pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
+                if(pixColor == "rgba(0,0,0,255)"){
+                    /*
+                        Detection test
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(120, 40, 20, 20);
+                    ctx.fillText(pixColor, 120, 90 + p*5);
+                    */
+                    
+                    return false;
+                }
+            }
+        } else if(dir == 'up'){
+            for(p = 0; p < WidX; p++){
+                imgdata = ctx.getImageData(posX+p,posY-2,1,1);
+                pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
+                if(pixColor == "rgba(0,0,0,255)"){
+                    /*
+                        Detection test
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(220, 40, 20, 20);
+                    ctx.fillText(pixColor, 220, 90 + p*5);
+                    */
+                    
+                    return false;
+                }
+            }
+        } else if(dir == 'left'){
+            for(p = 0; p < WidY; p++){
+                imgdata = ctx.getImageData(posX-2,sy+p,1,1);
+                pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
+                if(pixColor == "rgba(0,0,0,255)"){
+                    /*
+                        Detection test
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(320, 40, 20, 20);
+                    ctx.fillText(pixColor, 320, 90 + p*5);
+                    */
+                    
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    },
+    
+    collide: function(){
+        if (sx < 0 || sy < 0 || sx + wx > w || sy + wy > h) return true;
+    },
+    
+    touch: function(){
+        if (((sx <= enemy.esx && enemy.esx <= sx + wx) && (sy <= enemy.esy && enemy.esy <= sy + wy)) || ((sx <= enemy.esx + enemy.ewx && enemy.esx + enemy.ewx <= sx + wx) && (sy <= enemy.esy + enemy.ewy && enemy.esy + enemy.ewy <= sy + wy))) return true;
+    },
+    
+    inarea: function(){
+        //if (((sx - (wx / 2 + r) <= enemy.esx && enemy.esx <= sx + wx + (wx / 2 + r)) && (sy - (wy / 2 + r) <= enemy.esy && enemy.esy <= sy + wy + (wy / 2 + r))) || ((sx <= enemy.esx + enemy.ewx && enemy.esx + enemy.ewx <= sx + wx + (wx / 2 + r)) && (sy <= enemy.esy + enemy.ewy && enemy.esy + enemy.ewy <= sy + wy - (wy / 2 + r)))) return true;
+    },
 };
 
 function resize() {
@@ -87,76 +203,8 @@ function resize() {
 
 
 
-/*-------------------CHARACTER-------------------*/
+/*-------------------CHARACTERS-------------------*/
 var character = {
-    edgeDetect: function(dir) {
-        var imgdata = ctx.getImageData(sx-1,sy-1,1,1);
-        var pixColor;
-        var p;
-        if (dir == 'down'){
-            for(p = 0; p < wx; p++){
-                imgdata = ctx.getImageData(sx+p,sy+wy+2,1,1);
-                pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
-                if(pixColor == "rgba(0,0,0,255)"){
-                    /*
-                        Detection test
-                    ctx.fillStyle = "red";
-                    ctx.fillRect(20, 40, 20, 20);
-                    ctx.fillText(pixColor, 20, 90 + p*5);
-                    */
-        
-                    return false;
-                }
-            }
-        } else if(dir == 'right'){
-            for(p = 0; p < wy; p++){
-                imgdata = ctx.getImageData(sx+wx+2,sy+p,1,1);
-                pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
-                if(pixColor == "rgba(0,0,0,255)"){
-                    /*
-                    Detection test
-                    ctx.fillStyle = "red";
-                    ctx.fillRect(120, 40, 20, 20);
-                    ctx.fillText(pixColor, 120, 90 + p*5);
-                    */
-                    
-                    return false;
-                }
-            }
-        } else if(dir == 'up'){
-            for(p = 0; p < wx; p++){
-                imgdata = ctx.getImageData(sx+p,sy-2,1,1);
-                pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
-                if(pixColor == "rgba(0,0,0,255)"){
-                    /*
-                    Detection test
-                    ctx.fillStyle = "red";
-                    ctx.fillRect(220, 40, 20, 20);
-                    ctx.fillText(pixColor, 220, 90 + p*5);
-                    */
-                    
-                    return false;
-                }
-            }
-        } else if(dir == 'left'){
-            for(p = 0; p < wy; p++){
-                imgdata = ctx.getImageData(sx-2,sy+p,1,1);
-                pixColor = "rgba(" + imgdata.data[0] + ","  + imgdata.data[1] + ","+ imgdata.data[2] + ","+ imgdata.data[3] + ")";
-                if(pixColor == "rgba(0,0,0,255)"){
-                    /*
-                    Detection test
-                    ctx.fillStyle = "red";
-                    ctx.fillRect(320, 40, 20, 20);
-                    ctx.fillText(pixColor, 320, 90 + p*5);
-                    */
-                    
-                    return false;
-                }
-            }
-        }
-        
-        return true;
-    },
 
     listen: function() {
         document.addEventListener("keydown", keyDownHandler, false);
@@ -184,7 +232,7 @@ var character = {
     },
     
     moveChar: function() {
-        if (dDown && regeneration === false && character.edgeDetect('down')) {
+        if (dDown && regeneration === false && tracker.edgeDetect('down', sx, sy, wx, wy)) {
             if(sy >= h/2 - wy && (ssy + h*stageScale > h)){
                 ssy -= speed; //Move Background up
             } else {
@@ -193,7 +241,7 @@ var character = {
             }
             recent = 'down';
         }
-        if (rDown && regeneration === false && character.edgeDetect('right')) {
+        if (rDown && regeneration === false && tracker.edgeDetect('right', sx, sy, wx, wy)) {
             if((sx >= w/2-wx) && (ssx + w*stageScale > w)){
                 ssx -= speed; //Move Background left
             } else {
@@ -202,7 +250,7 @@ var character = {
             }
             recent = 'right';
         }
-        if (uDown && regeneration === false && character.edgeDetect('up')) {
+        if (uDown && regeneration === false && tracker.edgeDetect('up', sx, sy, wx, wy)) {
             if(ssy < 0 && sy <= h/2-wy){
                 ssy += speed; //Move Background down
             } else {
@@ -211,7 +259,7 @@ var character = {
             }
             recent = 'up';
         }
-        if (lDown && regeneration === false && character.edgeDetect('left')) {
+        if (lDown && regeneration === false && tracker.edgeDetect('left', sx, sy, wx, wy)) {
             if(ssx < 0 && sx <= w/2-wx){
                 ssx += speed; //Move Background right
             } else {
@@ -232,7 +280,7 @@ var character = {
         }
         */
         
-        if(character.edgeDetect('up') && character.edgeDetect('down') && character.edgeDetect('left') && character.edgeDetect('right')){
+        if(tracker.edgeDetect('up', sx, sy, wx, wy) && tracker.edgeDetect('down', sx, sy, wx, wy) && tracker.edgeDetect('left', sx, sy, wx, wy) && tracker.edgeDetect('right', sx, sy, wx, wy)){
             sx = random.s(sx);
             sy = random.s(sy);
             wx = random.reg(wx);
@@ -248,6 +296,7 @@ var character = {
         
         ctx.beginPath();
         ctx.fillStyle = 'black';
+        
         //Right Eye
         ctx.arc(sx + wx / 6, sy + wy / 6, (wx / 4 + wy / 4) / 4, 0, 2 * Math.PI);
         ctx.stroke();
@@ -268,6 +317,253 @@ var character = {
         ctx.closePath();
     }
 };
+
+function enemy(state, type, enemspeed) {
+
+    this.state = state, //Spawn, alive, push, dying, or dead
+
+    this.type = type, //Regular or boss
+
+    this.speed = enemspeed * speed,
+    
+    this.bossIsAlive = false, //Boss not functional
+
+    this.spawn = function() {
+        random.randomLocation(this);
+        this.state = 'alive';
+    },
+
+    this.draw = function() {
+        ctx.lineWidth = 1;
+        const randNum = Math.round(Math.random() * 2);
+        const erandomColor = ecolors[randNum];
+        ctx.fillStyle = erandomColor;
+        this.ewx = wx / 2 - 10;
+        this.ewy = wy - 10;
+        ctx.beginPath();
+        
+        //Draws Body
+        ctx.moveTo(this.esx - this.ewx / 8, this.esy);
+        ctx.bezierCurveTo(this.esx - this.ewx / 8, this.esy - this.ewy / 4,
+                          this.esx + this.ewx + this.ewx / 8, this.esy - this.ewy / 4,
+                          this.esx + this.ewx + this.ewx / 8, this.esy);
+
+        ctx.bezierCurveTo(this.esx + this.ewx * 2, this.esy,
+                          this.esx + this.ewx * 2, this.esy + this.ewy,
+                          this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy);
+
+        ctx.bezierCurveTo(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy * 1.75,
+                          this.esx - this.ewx * 2, this.esy + this.ewy / 4,
+                          this.esx, this.esy + this.ewy / 2);
+
+        ctx.bezierCurveTo(this.esx - this.ewx, this.esy + this.ewy / 2,
+                          this.esx - this.ewx / 2, this.esy,
+                          this.esx - this.ewx / 8, this.esy);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.lineWidth = 1;
+
+        //Draws Left Eye
+        ctx.beginPath();
+        ctx.fillStyle = 'black';
+        ctx.arc(this.esx + this.ewx / 6, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 4, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.closePath();
+
+        //Draws Right Eye
+        ctx.beginPath();
+        ctx.arc(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 6, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.closePath();
+
+        //Draws Mouth
+        ctx.beginPath();
+        ctx.moveTo(this.esx + this.ewx / 8, this.esy + this.ewy);
+        ctx.bezierCurveTo(this.esx + this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy);
+        ctx.stroke();
+        ctx.closePath();
+    },
+
+    this.drawBoss = function() {
+        ctx.lineWidth = 1;
+        randNum = Math.round(Math.random() * 2);
+        const ebrandomColor = ebcolors[randNum];
+        ctx.fillStyle = ebrandomColor;
+        this.ewx = wx - 10;
+        this.ewy = wy * 2 - 10;
+        ctx.beginPath();
+
+        ctx.moveTo(this.esx - this.esx / 20, this.esy);
+        ctx.bezierCurveTo(this.esx - this.esx / 20, this.esy - this.esy / 20, this.esx + this.ewx + this.esx / 20, this.esy - this.esy / 20, this.esx + this.ewx + this.esx / 20, this.esy);
+
+        ctx.bezierCurveTo(this.esx + this.ewx + this.esx / 10, this.esy, this.esx + this.ewx + this.esx / 10, this.esy + this.ewy, this.esx + this.ewx, this.esy + this.ewy);
+
+        ctx.bezierCurveTo(this.esx + this.ewx / 10, this.esy + this.esy / 4, this.esx - this.ewx * 2, this.esy + this.ewy / 4, this.esx - this.esx / 20, this.esy + this.ewy / 2);
+
+        ctx.bezierCurveTo(this.esx - this.ewx / 2, this.esy + this.ewy / 2, this.esx - this.ewx * 2, this.esy + this.ewy / 4, this.esx - this.esx / 20, this.esy);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.lineWidth = 1;
+
+        ctx.beginPath();
+        ctx.fillStyle = 'black';
+        ctx.arc(this.esx + this.ewx / 6, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 4, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.arc(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 6, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.closePath();
+
+        ctx.beginPath();
+        ctx.moveTo(this.esx + this.ewy / 8, this.esy + this.ewy);
+        ctx.bezierCurveTo(this.esx + this.ewx / 8, this.esy + this.ewy - this.ewy / 3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy - this.ewy / 3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy);
+        ctx.stroke();
+        ctx.closePath();
+    },
+
+    this.move = function() {
+
+        if (this.esx > sx + wx / 10) this.esx -= this.speed;
+        if (this.esx < sx + wx / 10) this.esx += this.speed;
+
+        if (this.esy > sy + wy / 10) this.esy -= this.speed;
+        if (this.esy < sy + wy / 10) this.esy += this.speed;
+
+        this.esx = random.reg(this.esx);
+        this.esy = random.reg(this.esy);
+    },
+
+    this.kill = function() {
+        this.ewx -= 2;
+        this.ewy -= 2;
+
+        //Draws Body
+        ctx.moveTo(this.esx - this.ewx / 8, this.esy);
+        ctx.bezierCurveTo(this.esx - this.ewx / 8, this.esy - this.ewy / 4,
+                          this.esx + this.ewx + this.ewx / 8, this.esy - this.ewy / 4,
+                          this.esx + this.ewx + this.ewx / 8, this.esy);
+
+        ctx.bezierCurveTo(this.esx + this.ewx * 2, this.esy,
+                          this.esx + this.ewx * 2, this.esy + this.ewy,
+                          this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy);
+
+        ctx.bezierCurveTo(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy * 1.75,
+                          this.esx - this.ewx * 2, this.esy + this.ewy / 4,
+                          this.esx, this.esy + this.ewy / 2);
+
+        ctx.bezierCurveTo(this.esx - this.ewx, this.esy + this.ewy / 2,
+                          this.esx - this.ewx / 2, this.esy,
+                          this.esx - this.ewx / 8, this.esy);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+
+        if (this.ewx <= 0 || this.ewy <= 0) {
+            score++;
+            if (power < 50) power += 1;
+            this.state = 'dead';
+            if(this.type == 'boss') this.bossIsAlive = false;
+        }
+    },
+
+    this.push = function() {
+        if(this.type == 'regular')this.draw();
+        else if(this.typ == 'boss')this.drawBoss();
+        if (tracker.inarea(this)) {
+            if (this.esx > sx + wx / 10) this.esx += 6;
+            if (this.esx < sx + wx / 10) this.esx -= 6;
+
+            if (this.esy > sy + wy / 10) this.esy += 6;
+            if (this.esy < sy + wy / 10) this.esy -= 6;
+        } else {
+            this.esx = random.s(this.esx);
+            this.esy = random.s(this.esy);
+        }
+    },
+        
+    this.stateDef = function(a) {
+        if (a.type == 'regular') {
+            if (a.state == 'spawn' || a.state == 'dead') {
+                a.spawn();
+            } else if (a.state == 'alive') {
+                if(pause === false) a.move();
+                a.draw();
+            } else if (a.state == 'dying') {
+                a.kill();
+            } else if (a.state == 'push') {
+                a.push();
+            }
+        } else if (a.type == 'boss') {
+            if (a.state == 'spawn') {
+                a.spawn();
+            } else if (a.state == 'alive') {
+                if(pause === false) a.move();
+                a.drawBoss();
+            } else if (a.state == 'dying') {
+                a.kill();
+            } else if (a.state == 'push') {
+                a.push();
+            }
+        }
+    };
+}
+
+var enemy1 = new enemy('none', 'regular', 0.3);
+var enemy2 = new enemy('none', 'regular', 1);
+var enemy3 = new enemy('none', 'regular', 1.2);
+var enemy4 = new enemy('none', 'regular', 0.9);
+var enemy5 = new enemy('none', 'regular', 1.4);
+var enemy6 = new enemy('none', 'regular', 1.1);
+var enemy7 = new enemy('none', 'regular', 1.2);
+var enemy8 = new enemy('none', 'regular', 1.3);
+var enemy9 = new enemy('none', 'regular', 1.4);
+var enemy10 = new enemy('none', 'regular', 1.5);
+var enemy11 = new enemy('none', 'regular', 1.5);
+var enemy12 = new enemy('none', 'regular', 1.5);
+var enemy13 = new enemy('none', 'regular', 1.8);
+var enemy14 = new enemy('none', 'regular', 1.8);
+var enemy15 = new enemy('none', 'regular', 2.1);
+//var enemy1 = new enemy('none', 'boss');
+
+enemies = [enemy1,
+           enemy2,
+           enemy3,
+           enemy4,
+           enemy5,
+           enemy6,
+           enemy7,
+           enemy8,
+           enemy9,
+           enemy10,
+           enemy11,
+           enemy12,
+           enemy13,
+           enemy14,
+           enemy15 ];
+
+function stateDefinition(){
+    enemies.forEach(function(item){
+        item.stateDef();
+    });
+}
+
+function enemySpawn(){}
+
+function enemeySpeed(){
+    if(score >= 20 && score < 40)   speed=1.2;
+    if(score >= 40 && score < 80)   speed=1.25;
+    if(score >= 80 && score < 100)  speed=1.5;
+    if(score >= 100 && score < 200) speed=1.75;
+    if(score >= 200 && score < 250) speed=2;
+    if(score >= 250 && score < 300) speed=2.5;
+    if(score >= 300)                speed=3;
+}
 /*-----------------------------------------------*/
 
 
@@ -280,6 +576,11 @@ var hud = {
                 ctx.fillStyle = '#fffbf9';
                 ctx.fillRect(0, 0, w, h);
                 ctx.drawImage(layer1, ssx, ssy, w*stageScale, h*stageScale);
+                break;
+            case 2:
+                ctx.fillStyle = '#fffbf9';
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(layer2, ssx, ssy, w*stageScale, h*stageScale);
                 break;
             default:
                 ctx.fillStyle = '#fffbf9';
@@ -338,17 +639,25 @@ var hud = {
 function main(timestamp) {
     ctx.clearRect(0, 0, w, h);
     
+    time = timestamp;
+    
     resize(c);
     
     hud.stage(1);
     
-    hud.full();
-    
     character.listen();
+    
+    //stateDefinition();
     
     character.moveChar();
     
+    hud.stage(2);
+    
     character.drawChar();
+    
+    //enemySpawn();
+    
+    hud.full();
     
     if (xMain) window.requestAnimationFrame(main);
 }
