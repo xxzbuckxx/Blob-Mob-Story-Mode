@@ -7,10 +7,14 @@
    </head>
    <body>
       <div class="menu">
+         <div id="play"><!--<canvas id="animation" width="500" height="300">Click To start</canvas>-->
+         <h2 id="animation">PLAY</h2>
+         </div>
          <div class="header">
             <h1>Blob Mob <i>the whole story</i></h1>
             <hr>
-            <canvas id="animation" width="500" height="300">Click To start</canvas>
+            <!--<canvas id="animation" width="500" height="300">Click To start</canvas>-->
+            <iframe width="800" height="450" src="https://www.powtoon.com/embed/dRGUXmdlqMe/" frameborder="0" onload="menuStart()"></iframe>
             <hr>
          </div>
          <div class="content-left">
@@ -26,7 +30,7 @@
       </div>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
        <script>
-           const mc = document.getElementById("animation");
+           /*const mc = document.getElementById("animation");
            const mctx = mc.getContext("2d");
            const menuVisible = $('#animation').is(':visible');
            var msx = 20;
@@ -35,9 +39,9 @@
            var mwy = 50;
            var centDist = 0;
            
-           if (menuVisible) {
-               window.requestAnimationFrame(menuAnim);
-           }
+		   function menuStart(){
+           	   if (menuVisible) window.requestAnimationFrame(menuAnim);
+		   }
            
            function menuAnim(timestamp) {
                mctx.clearRect(0, 0, mc.width, mc.height);
@@ -45,13 +49,13 @@
                //menuDrawChar();
                
                mctx.fillStyle = 'black';
-               mctx.font = "50px comic sans ms";
+               mctx.font = "10px comic sans ms";
                const messg = "CLiCk  tO  pLaY";
                var space = 0;
                
                //Wobble letters up and down
                for(e = 0; e < messg.length; e++) {
-                   var x = 50;
+                   var x = 25;
                    var y = 0;
                    y = (e % 2 === 0) ? y += (centDist) : y -= (centDist);
                    if((timestamp % 4000) <= 2000) centDist+= ((timestamp % 2000) <= 1000) ? 0.01 : -0.01;
@@ -69,40 +73,13 @@
                if (rand > 5) return a + 1;
                else return a - 1;
            }
-           
-           function menuDrawChar(){
-               mctx.fillStyle = '#ffd6cc';
-               mctx.fillRect(msx, msy, mwx, mwy);
-               
-               mctx.lineWidth = 1;
-               
-               mctx.beginPath();
-               mctx.fillStyle = 'black';
-               
-               //Right Eye
-               mctx.arc(msx + mwx / 6, msy + mwy / 6, (mwx / 4 + mwy / 4) / 4, 0, 2 * Math.PI);
-               mctx.stroke();
-               mctx.closePath();
-               
-               //Left Eye
-               mctx.beginPath();
-               mctx.arc(msx + mwx - mwx / 8, msy + mwy / 6, (mwx / 4 + mwy / 4) / 6, 0, 2 * Math.PI);
-               mctx.stroke();
-               mctx.closePath();
-               
-               //Smile
-               mctx.beginPath();
-               mctx.moveTo(msx + mwx / 8, msy + mwy - mwy / 4);
-               mctx.bezierCurveTo(msx + mwy / 8, msy + mwy / 2, msx + mwx - mwy / 8, msy + mwy / 2, msx + mwx - mwy / 8, msy + mwy - mwy / 4);
-               mctx.stroke();
-               mctx.closePath();
-           }
-           
+           */
+
            $('#animation').click(function() {
                $('.menu').fadeOut('slow', function() {
                    $('.window').fadeIn('slow');
                    $('body').css("background", "black");
-                   window.cancelAnimationFrame(menuAnim);
+                   //window.cancelAnimationFrame(menuAnim);
                    window.requestAnimationFrame(main);
                });
            });
