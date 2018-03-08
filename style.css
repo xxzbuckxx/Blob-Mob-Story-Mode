@@ -10,6 +10,16 @@ body {
   font-family: fantasy;
 }
 
+#play {
+	position: fixed;
+	width: 200px;
+	height: 100px;
+	right: 10px;
+	top: 10px;
+	border-radius: 10px;
+	background-color: #ffd6cc;
+}
+
 .header {
   color: #ffd6cc;
   font-size: 30px;
