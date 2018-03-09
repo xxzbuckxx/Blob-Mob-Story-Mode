@@ -1,211 +1,113 @@
 <!doctype html>
 <html>
-<head>
-<meta charset="utf-8">
-<title>main</title>
-<link href="style.css" rel="stylesheet" type="text/css">
-
-</head>
-
-<body>
-	
-	<h1>Game</h1>
-	
-	<div id="window" >
-		<canvas id="game" width="800" height="800">Sorry your browser does not support the HTML Canvas Option.</canvas>
-	</div>
-	
-<script>
-		var c = document.getElementById("game");
-		var ctx = c.getContext("2d");
-		var xMain;
-        var pause = false;
-        var pWait = 0;
-		var sx = 100;
-		var sy = 100;
-		var wx = 50;
-		var wy = 50;
-		var w = c.width;
-		var h = c.height;
-		var randomColor = '#ffd6cc';
-		var rDown = false;
-		var lDown = false;
-		var uDown = false;
-		var dDown = false;
-		var attackb = false;
-		var attackz = false;
-		var attackx = false;
-		var power = 50;
-		var cool = 0;
-		var health = 100;
-		var dead = false;
-		var score = 0;
-		var highscore = localStorage.getItem("highscore");
-		var recent = 'right';
-		var damaging;
-		var speed = 1.5;
-		var regeneration = false;
-		var Otime = 0;
-		
-		//HELPER FUNCTIONS
-		function random(a) {
-			var rand = Math.random() * 10;
-			if (rand - 5 > 0 && a < 60) return a + .5;
-			else if (rand - 5 <= 0 && a > 40) return a - .5;
-			else return a;
-		}
-		
-		function srandom(a) {
-			var rand = Math.random() * 10
-			if (rand > 5) return a + 0.2;
-			else return a - 0.2;
-		}
-		
-		function mxrandom(a) {
-			var rand = Math.random() * 10;
-			if (rand > 5 && a < w - wx - 10) return a + 0.1;
-			else if (rand <= 5 && a > 10) return a - 0.1;
-			else return a;
-		}
-		
-		function myrandom(a) {
-			var rand = Math.random() * 10
-			if (rand > 5 && a > 10) return a - 0.1;
-			else if (rand <= 5 && a < h - wy - 10) return a + 0.1;
-			else return a;
-		}
-		
-        function pauseSwitch(){
-            if(pause && pWait >= 10){
-                pause = false;
-                pWait = 0;
-                window.requestAnimationFrame(main);
-            } else {
-                pause = true;
-            }
-        }
-        
-		//CHARACHTER
-		function drawChar() {
-			randNum = Math.round(Math.random() * 2);
-			//randomColor = colors[randNum];
-		
-		
-			ctx.fillStyle = randomColor;
-			ctx.fillRect(sx, sy, wx, wy);
-		
-			ctx.lineWidth = 1;
-		
-			ctx.beginPath();
-			ctx.fillStyle = 'black';
-			ctx.arc(sx + wx / 6, sy + wy / 6, (wx / 4 + wy / 4) / 4, 0, 2 * Math.PI);
-			ctx.stroke();
-			ctx.closePath();
-		
-			ctx.beginPath();
-			ctx.arc(sx + wx - wx / 8, sy + wy / 6, (wx / 4 + wy / 4) / 6, 0, 2 * Math.PI);
-			ctx.stroke();
-			ctx.closePath();
-		
-			ctx.beginPath();
-			ctx.moveTo(sx + wx / 8, sy + wy - wy / 3);
-			ctx.bezierCurveTo(sx + wy / 8, sy + wy, sx + wx - wy / 8, sy + wy, sx + wx - wy / 8, sy + wy - wy / 3);
-			ctx.stroke();
-			ctx.closePath();
-		}
-		
-		function moveChar() {
-			if (dDown && regeneration == false) {
-				sy += speed;
-				sx = random(sx);
-				recent = 'down';
-			}
-			if (rDown && regeneration == false) {
-				sx += speed;
-				sy = random(sy)
-				recent = 'right';
-			}
-			if (uDown && regeneration == false) {
-				sy -= speed;
-				sx = random(sx);
-				recent = 'up';
-			}
-			if (lDown && regeneration == false) {
-				sx -= speed;
-				sy = random(sy);
-				recent = 'left';
-			}
-			/*if (attackb && regeneration == false) {
-				clearInterval(sessionM);
-				attack();
-			} else if (attackz && regeneration == false) {
-				clearInterval(sessionM);
-				attackZ();
-			} else if (attackx == false){
-				regeneration = false;
-			}
-			*/
-			sx = srandom(sx);
-			sy = srandom(sy);
-			wx = random(wx);
-			wy = random(wy);
-		
-		}
-		
-		
-		function listen() {
-			document.addEventListener("keydown", keyDownHandler, false);
-			document.addEventListener("keyup", keyUpHandler, false);
-		    
-			function keyDownHandler(e) {
-				e.preventDefault();
-                if (pause != true){
-                    if (e.keyCode == 40 || e.keyCode == 83) dDown = true;
-				    if (e.keyCode == 39 || e.keyCode == 68) rDown = true;
-				    if (e.keyCode == 38 || e.keyCode == 87) uDown = true;
-				    if (e.keyCode == 37 || e.keyCode == 65) lDown = true;
-                    if (e.keyCode == 80) pauseSwitch();
-				    else if (e.keyCode == 32 && cool == 0) attackb = true;
-				    else if (e.keyCode == 90 && cool == 0 && power >= 10) attackz = true;
-				    else if (e.keyCode == 88 && cool == 0 && power > 0) attackx = true;
-                } else {
-				    if (e.keyCode == 80) pauseSwitch();
-                }
-                
-			}
-		
-			function keyUpHandler(e) {
-				if (e.keyCode == 40 || e.keyCode == 83) dDown = false;
-				if (e.keyCode == 39 || e.keyCode == 68) rDown = false;
-				if (e.keyCode == 38 || e.keyCode == 87) uDown = false;
-				if (e.keyCode == 37 || e.keyCode == 65) lDown = false;
-				if (e.keyCode == 88) attackx = false;
-			}
-            
-		}
-
-        
-        function pauseMenu(){
-            listen();
-            ctx.font = "30px Arial";
-            ctx.fillText("Pause", 20, 40);
-        }
-        
-        
-		xMain = true;
-		function main(timestamp){
-            ctx.clearRect(0,0,w,h);
-            moveChar();
-            drawChar();
-            listen();
-            
-            pWait++;
-			if(xMain && pause != true) window.requestAnimationFrame(main);
-            else pauseMenu();
-		}
-		
-		window.requestAnimationFrame(main);
-	</script>
-	
-</body>
+   <head>
+      <meta charset="utf-8">
+      <title>main</title>
+      <link rel="stylesheet" type="text/css" href="style.css">
+   </head>
+   <body>
+      <div class="menu">
+         <div class="header">
+            <h1>Blob Mob <i>the whole story</i></h1>
+            <hr>
+            <canvas id="animation" width="500" height="300">Click To start</canvas>
+            <hr>
+         </div>
+         <div class="content-left">
+            <h2>How to Play</h2>
+         </div>
+         <span class="divider"></span>
+         <div class="content-right">
+            <h2>About</h2>
+         </div>
+      </div>
+      <div class="window">
+         <canvas id="game" width="800" height="800">Sorry your browser does not support the HTML5 Canvas.</canvas>
+      </div>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+       <script>
+           const mc = document.getElementById("animation");
+           const mctx = mc.getContext("2d");
+           const menuVisible = $('#animation').is(':visible');
+           var msx = 20;
+           var msy = 20;
+           var mwx = 50;
+           var mwy = 50;
+           var centDist = 0;
+           
+           if (menuVisible) {
+               window.requestAnimationFrame(menuAnim);
+           }
+           
+           function menuAnim(timestamp) {
+               mctx.clearRect(0, 0, mc.width, mc.height);
+               
+               //menuDrawChar();
+               
+               mctx.fillStyle = 'black';
+               mctx.font = "50px comic sans ms";
+               const messg = "CLiCk  tO  pLaY";
+               var space = 0;
+               
+               //Wobble letters up and down
+               for(e = 0; e < messg.length; e++) {
+                   var x = 50;
+                   var y = 0;
+                   y = (e % 2 === 0) ? y += (centDist) : y -= (centDist);
+                   if((timestamp % 4000) <= 2000) centDist+= ((timestamp % 2000) <= 1000) ? 0.01 : -0.01;
+                   else centDist+= ((timestamp % 2000) <= 1000) ? -0.01 : 0.01;
+                   mctx.fillText(messg.slice(e,e+1), x + space, mc.height / 2 + y);
+                   space += mctx.measureText(messg.slice(e,e+1)).width + 6;
+               }
+               
+               if (menuVisible) window.requestAnimationFrame(menuAnim);
+           }
+           
+           function mcrandom(a) {
+               var rand = Math.random() * 10;
+               if (rand > 5) return a + 1;
+               else return a - 1;
+           }
+           
+           function menuDrawChar(){
+               mctx.fillStyle = '#ffd6cc';
+               mctx.fillRect(msx, msy, mwx, mwy);
+               
+               mctx.lineWidth = 1;
+               
+               mctx.beginPath();
+               mctx.fillStyle = 'black';
+               
+               //Right Eye
+               mctx.arc(msx + mwx / 6, msy + mwy / 6, (mwx / 4 + mwy / 4) / 4, 0, 2 * Math.PI);
+               mctx.stroke();
+               mctx.closePath();
+               
+               //Left Eye
+               mctx.beginPath();
+               mctx.arc(msx + mwx - mwx / 8, msy + mwy / 6, (mwx / 4 + mwy / 4) / 6, 0, 2 * Math.PI);
+               mctx.stroke();
+               mctx.closePath();
+               
+               //Smile
+               mctx.beginPath();
+               mctx.moveTo(msx + mwx / 8, msy + mwy - mwy / 4);
+               mctx.bezierCurveTo(msx + mwy / 8, msy + mwy / 2, msx + mwx - mwy / 8, msy + mwy / 2, msx + mwx - mwy / 8, msy + mwy - mwy / 4);
+               mctx.stroke();
+               mctx.closePath();
+           }
+           
+           $('#animation').click(function() {
+               $('.menu').fadeOut('slow', function() {
+                   $('.window').fadeIn('slow');
+                   $('body').css("background", "black");
+                   window.cancelAnimationFrame(menuAnim);
+                   window.requestAnimationFrame(main);
+               });
+           });
+       </script>
+       
+       
+       <script src="level_scripts/test.js"></script>
+    </body>
 </html>
