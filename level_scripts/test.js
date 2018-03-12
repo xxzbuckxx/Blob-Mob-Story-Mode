@@ -8,7 +8,8 @@ const ctx = c.getContext("2d");
 var w = c.width; //Canvas width
 var h = c.height; //Canvas height
 var xMain = true; //Main session
-var time;
+var time; //game counter
+var atime = 0; //attack counter
 var sx = 30; //Player placement x
 var sy = 100; //Player placement y
 var wx = 50; //Player width
@@ -32,6 +33,7 @@ var pause = true;
 var attackb = false; //Basic attack is being executed (space pressed)
 var attackz = false; //Push attack (Q pressed)
 var attackx = false; //Regenerate (E pressed)
+var slisten = true; //True when listen should be called
 var enemies; //Enemies array
 var power = 50;
 var cool = 0;
@@ -40,7 +42,7 @@ var dead = false;
 var score = 0;
 var highscore = localStorage.getItem("highscore"); //Highscore stored locally in cookies
 var recent = 'right'; //Recent direction moved (right, left, up, down)
-var damaging;
+var damaging = false;
 var speed = 1.5; //Enemy speed
 var regeneration = false;
 const layer1 = new Image(); //Level map
@@ -269,10 +271,9 @@ var character = {
             
             recent = 'left';
         }
-        /*if (attackb && regeneration == false) {
-        clearInterval(sessionM);
-        attack();
-        } else if (attackz && regeneration == false) {
+        if (attackb && regeneration === false) {
+            character.attack();
+        } /*else if (attackz && regeneration == false) {
         clearInterval(sessionM);
         attackZ();
         } else if (attackx == false){
@@ -315,6 +316,36 @@ var character = {
         ctx.bezierCurveTo(sx + wy / 8, sy + wy / 2, sx + wx - wy / 8, sy + wy / 2, sx + wx - wy / 8, sy + wy - wy / 4);
         ctx.stroke();
         ctx.closePath();
+    },
+    
+    attack: function(){
+        slisten = false;
+        playerColor = '#adedff';
+        atime++;
+        cool+=1.25;
+        
+        if (atime < 20 && recent == 'right' && tracker.edgeDetect('right', sx, sy, wx, wy)) sx += 3;
+        else if (atime < 20 && recent == 'left' && tracker.edgeDetect('left', sx, sy, wx, wy)) sx -= 3;
+        else if (atime > 20 && recent == 'left' && tracker.edgeDetect('left', sx, sy, wx, wy)) sx += 3;
+        else if (atime > 20 && recent == 'right' && tracker.edgeDetect('right', sx, sy, wx, wy)) sx -= 3;
+
+        if (atime < 20 && recent == 'down' && tracker.edgeDetect('down', sx, sy, wx, wy)) sy += 3;
+        else if (atime < 20 && recent == 'up' && tracker.edgeDetect('up', sx, sy, wx, wy)) sy -= 3;
+        else if (atime > 20 && recent == 'up' && tracker.edgeDetect('up', sx, sy, wx, wy)) sy += 3;
+        else if (atime > 20 && recent == 'down' && tracker.edgeDetect('down', sx, sy, wx, wy)) sy -= 3;
+
+        enemies.forEach(function(item, index, arr){
+            if (atime == 5 && tracker.touch(item) && item.state != 'dead') arr[index].state = 'dying';
+        });
+
+        if (atime >= 40) {
+            attackb = false;
+            slisten = true;
+            atime = 0;
+        } else if (tracker.collide()) {
+            //clearInterval(sessionA);
+            //shrink();
+        }
     }
 };
 
@@ -645,7 +676,7 @@ function main(timestamp) {
     
     hud.stage(1);
     
-    character.listen();
+    if(slisten) character.listen();
     
     //stateDefinition();
     
@@ -658,6 +689,15 @@ function main(timestamp) {
     //enemySpawn();
     
     hud.full();
+    
+    if (cool > 0 && regeneration === false && attackb === false) {
+        cool-= 1.25;
+        playerColor = '#adedff';
+    }
+    
+    if (cool === 0 && damaging === false) {
+        playerColor = '#ffd6cc';
+    }
     
     if (xMain) window.requestAnimationFrame(main);
 }
