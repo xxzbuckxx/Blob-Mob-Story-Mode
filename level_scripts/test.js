@@ -10,6 +10,7 @@ var h = c.height; //Canvas height
 var xMain = true; //Main session
 var time; //game counter
 var atime = 0; //attack counter
+var ptime = 0;
 var sx = 30; //Player placement x
 var sy = 100; //Player placement y
 var wx = 50; //Player width
@@ -30,9 +31,11 @@ var lDown = false; //Left arrow or A
 var uDown = false; //Up arrow or W
 var dDown = false; //Down arrow or S
 var pause = true;
-var attackb = false; //Basic attack is being executed (space pressed)
-var attackz = false; //Push attack (Q pressed)
+var attackNorm = false; //Basic attack is being executed (space pressed)
+var attackPush = false; //Push attack (Q pressed)
 var attackx = false; //Regenerate (E pressed)
+var r = 3;
+var pushDraw = false;
 var slisten = true; //True when listen should be called
 var enemies; //Enemies array
 var power = 50;
@@ -47,7 +50,7 @@ var speed = 1.5; //Enemy speed
 var regeneration = false;
 const layer1 = new Image(); //Level map
     layer1.src = "level_maps/test_map.png";
-const stageScale = 5;
+const stageScale = 3;
 const layer2 = new Image();
     layer2.src = "level_maps/test_map-2nd.png";
 
@@ -218,8 +221,8 @@ var character = {
             if (e.keyCode == 39 || e.keyCode == 68) rDown = true;
             if ((e.keyCode == 38 || e.keyCode == 87)) uDown = true;
             if (e.keyCode == 37 || e.keyCode == 65) lDown = true;
-            if (e.keyCode == 32 && cool === 0) attackb = true;
-            else if (e.keyCode == 90 && cool === 0 && power >= 10) attackz = true;
+            if (e.keyCode == 32 && cool === 0) attackNorm = true;
+            else if (e.keyCode == 90 && cool === 0 && power >= 10) attackPush = true;
             else if (e.keyCode == 88 && cool === 0 && power > 0) attackx = true;
         }
         
@@ -234,49 +237,51 @@ var character = {
     },
     
     moveChar: function() {
-        if (dDown && regeneration === false && tracker.edgeDetect('down', sx, sy, wx, wy)) {
-            if(sy >= h/2 - wy && (ssy + h*stageScale > h)){
-                ssy -= speed; //Move Background up
-            } else {
-                sy += speed;
-                //sx = random.reg(sx);
+        if(slisten){
+            if (dDown && regeneration === false && tracker.edgeDetect('down', sx, sy, wx, wy)) {
+                if(sy >= h/2 - wy && (ssy + h*stageScale > h)){
+                    ssy -= speed; //Move Background up
+                } else {
+                    sy += speed;
+                    //sx = random.reg(sx);
+                }
+                recent = 'down';
             }
-            recent = 'down';
-        }
-        if (rDown && regeneration === false && tracker.edgeDetect('right', sx, sy, wx, wy)) {
-            if((sx >= w/2-wx) && (ssx + w*stageScale > w)){
-                ssx -= speed; //Move Background left
-            } else {
-                sx += speed;
-                //sy = random.reg(sy);
+            if (rDown && regeneration === false && tracker.edgeDetect('right', sx, sy, wx, wy)) {
+                if((sx >= w/2-wx) && (ssx + w*stageScale > w)){
+                    ssx -= speed; //Move Background left
+                } else {
+                    sx += speed;
+                    //sy = random.reg(sy);
+                }
+                recent = 'right';
             }
-            recent = 'right';
-        }
-        if (uDown && regeneration === false && tracker.edgeDetect('up', sx, sy, wx, wy)) {
-            if(ssy < 0 && sy <= h/2-wy){
-                ssy += speed; //Move Background down
-            } else {
-                sy -= speed;
-                //sx = random.reg(sx);
+            if (uDown && regeneration === false && tracker.edgeDetect('up', sx, sy, wx, wy)) {
+                if(ssy < 0 && sy <= h/2-wy){
+                    ssy += speed; //Move Background down
+                } else {
+                    sy -= speed;
+                    //sx = random.reg(sx);
+                }
+                recent = 'up';
             }
-            recent = 'up';
-        }
-        if (lDown && regeneration === false && tracker.edgeDetect('left', sx, sy, wx, wy)) {
-            if(ssx < 0 && sx <= w/2-wx){
-                ssx += speed; //Move Background right
-            } else {
-                sx -= speed;
-                //sy = random.reg(sy);
+            if (lDown && regeneration === false && tracker.edgeDetect('left', sx, sy, wx, wy)) {
+                if(ssx < 0 && sx <= w/2-wx){
+                    ssx += speed; //Move Background right
+                } else {
+                    sx -= speed;
+                    //sy = random.reg(sy);
+                }
+                
+                recent = 'left';
             }
-            
-            recent = 'left';
         }
-        if (attackb && regeneration === false) {
+        
+        if (attackNorm && regeneration === false) {
             character.attack();
-        } /*else if (attackz && regeneration == false) {
-        clearInterval(sessionM);
-        attackZ();
-        } else if (attackx == false){
+        } else if (attackPush && regeneration === false) {
+            character.push();
+        } /*else if (attackx == false){
         regeneration = false;
         }
         */
@@ -316,6 +321,15 @@ var character = {
         ctx.bezierCurveTo(sx + wy / 8, sy + wy / 2, sx + wx - wy / 8, sy + wy / 2, sx + wx - wy / 8, sy + wy - wy / 4);
         ctx.stroke();
         ctx.closePath();
+        
+        if(pushDraw){
+            ctx.beginPath();
+            ctx.strokeStyle = playerColor;
+            ctx.arc(sx + wx / 2, sy + wy / 2, wx + 3, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.strokeStyle = 'black';
+        }
     },
     
     attack: function(){
@@ -339,13 +353,62 @@ var character = {
         });
 
         if (atime >= 40) {
-            attackb = false;
+            attackNorm = false;
             slisten = true;
             atime = 0;
         } else if (tracker.collide()) {
             //clearInterval(sessionA);
             //shrink();
         }
+    },
+    
+    push: function(){
+        slisten = false;
+        pushDraw = true;
+        playerColor = '#adedff';
+        ptime++;
+
+        if (ptime <= 28) {
+            //r--;
+            cool += 0.5;
+        } else if (ptime >= 32 && ptime < 80 && ptime % 8 === 0) {
+            //r -= 3;
+            cool += 0.5;
+        } else if (ptime >= 32 && ptime < 80 && Math.abs(ptime % 8) == 1) {
+            //r += 3;
+            cool += 0.75;
+        } else if (80 <= ptime && ptime < 120) {
+            enemies.forEach(function(item, index, arr){
+                arr[index].state = 'push';
+            });
+            
+            power--;
+            //r += 10;
+            cool += 0.125;
+        }
+        
+        if (ptime >= 400) {
+            cool += 0.25;
+            
+            slisten = true;
+            ptime = 0;
+            r = 3;
+            attackPush = false;
+            pushDraw = false;
+            
+            enemies.forEach(function(item, index, arr){
+                arr[index].state = 'alive';
+            });
+
+            //cool += 1;
+        } /*else if (tracker.collide()) {
+            attackPush = false;
+            //shrink();
+
+            enemies.forEach(function(item, index, arr){
+                arr[index].state = 'alive';
+            });
+        }*/
     }
 };
 
@@ -676,7 +739,7 @@ function main(timestamp) {
     
     hud.stage(1);
     
-    if(slisten) character.listen();
+    character.listen();
     
     //stateDefinition();
     
@@ -690,7 +753,7 @@ function main(timestamp) {
     
     hud.full();
     
-    if (cool > 0 && regeneration === false && attackb === false) {
+    if (cool > 0 && regeneration === false && attackNorm === false && attackPush === false) {
         cool-= 1.25;
         playerColor = '#adedff';
     }
