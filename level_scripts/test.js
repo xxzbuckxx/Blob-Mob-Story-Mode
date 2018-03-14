@@ -11,6 +11,7 @@ var xMain = true; //Main session
 var time; //game counter
 var atime = 0; //attack counter
 var ptime = 0;
+var rtime = 0;
 var sx = 30; //Player placement x
 var sy = 100; //Player placement y
 var wx = 50; //Player width
@@ -33,12 +34,12 @@ var dDown = false; //Down arrow or S
 var pause = true;
 var attackNorm = false; //Basic attack is being executed (space pressed)
 var attackPush = false; //Push attack (Q pressed)
-var attackx = false; //Regenerate (E pressed)
-var r = 3;
+var attackRegen = false; //Regenerate (E pressed)
+var r = 5;
 var pushDraw = false;
 var slisten = true; //True when listen should be called
 var enemies; //Enemies array
-var power = 50;
+var power = 100;
 var cool = 0;
 var health = 100;
 var dead = false;
@@ -48,6 +49,7 @@ var recent = 'right'; //Recent direction moved (right, left, up, down)
 var damaging = false;
 var speed = 1.5; //Enemy speed
 var regeneration = false;
+var justRegen = false;
 const layer1 = new Image(); //Level map
     layer1.src = "level_maps/test_map.png";
 const stageScale = 3;
@@ -223,7 +225,7 @@ var character = {
             if (e.keyCode == 37 || e.keyCode == 65) lDown = true;
             if (e.keyCode == 32 && cool === 0) attackNorm = true;
             else if (e.keyCode == 90 && cool === 0 && power >= 10) attackPush = true;
-            else if (e.keyCode == 88 && cool === 0 && power > 0) attackx = true;
+            else if (e.keyCode == 88 && cool === 0 && power > 0) attackRegen = true;
         }
         
         function keyUpHandler(e) {
@@ -231,7 +233,7 @@ var character = {
             if (e.keyCode == 39 || e.keyCode == 68) rDown = false;
             if (e.keyCode == 38 || e.keyCode == 87) uDown = false;
             if (e.keyCode == 37 || e.keyCode == 65) lDown = false;
-            if (e.keyCode == 88) attackx = false;
+            if (e.keyCode == 88) attackRegen = false;
         }
         
     },
@@ -281,10 +283,9 @@ var character = {
             character.attack();
         } else if (attackPush && regeneration === false) {
             character.push();
-        } /*else if (attackx == false){
+        } else if (attackRegen === false){
         regeneration = false;
         }
-        */
         
         if(tracker.edgeDetect('up', sx, sy, wx, wy) && tracker.edgeDetect('down', sx, sy, wx, wy) && tracker.edgeDetect('left', sx, sy, wx, wy) && tracker.edgeDetect('right', sx, sy, wx, wy)){
             sx = random.s(sx);
@@ -325,7 +326,7 @@ var character = {
         if(pushDraw){
             ctx.beginPath();
             ctx.strokeStyle = playerColor;
-            ctx.arc(sx + wx / 2, sy + wy / 2, wx + 3, 0, 2 * Math.PI);
+            ctx.arc(sx + wx / 2, sy + wy / 2, wx + r, 0, 2 * Math.PI);
             ctx.stroke();
             ctx.closePath();
             ctx.strokeStyle = 'black';
@@ -336,7 +337,7 @@ var character = {
         slisten = false;
         playerColor = '#adedff';
         atime++;
-        cool+=1.25;
+        cool += 0.75;
         
         if (atime < 20 && recent == 'right' && tracker.edgeDetect('right', sx, sy, wx, wy)) sx += 3;
         else if (atime < 20 && recent == 'left' && tracker.edgeDetect('left', sx, sy, wx, wy)) sx -= 3;
@@ -369,38 +370,35 @@ var character = {
         ptime++;
 
         if (ptime <= 28) {
-            //r--;
-            cool += 0.5;
+            r -= 0.2;
+            cool += 1;
         } else if (ptime >= 32 && ptime < 80 && ptime % 8 === 0) {
-            //r -= 3;
-            cool += 0.5;
-        } else if (ptime >= 32 && ptime < 80 && Math.abs(ptime % 8) == 1) {
-            //r += 3;
+            r -= 3;
             cool += 0.75;
-        } else if (80 <= ptime && ptime < 120) {
+        } else if (ptime >= 32 && ptime < 80 && Math.abs(ptime % 8) == 1) {
+            r += 3;
+            cool += 0.75;
+        } else if (80 <= ptime && ptime < 130) {
             enemies.forEach(function(item, index, arr){
                 arr[index].state = 'push';
             });
             
-            power--;
-            //r += 10;
-            cool += 0.125;
+            power -= 0.5;
+            r += 4;
+            cool += 0.25;
         }
         
-        if (ptime >= 400) {
-            cool += 0.25;
-            
+        if (ptime >= 200) {
+            cool -= 0.5;
             slisten = true;
             ptime = 0;
-            r = 3;
+            r = 5;
             attackPush = false;
             pushDraw = false;
             
             enemies.forEach(function(item, index, arr){
                 arr[index].state = 'alive';
             });
-
-            //cool += 1;
         } /*else if (tracker.collide()) {
             attackPush = false;
             //shrink();
@@ -409,6 +407,32 @@ var character = {
                 arr[index].state = 'alive';
             });
         }*/
+    },
+    
+    regenerate: function(){
+        if(cool == 100){
+            justRegen = true;
+            
+            if(power <= 0){
+                regeneration = false;
+                attackRegen = false;
+            }
+            if(rtime % 3 === 0 && power > 0) power-=1;
+            if(health < 100) health++;
+            if(rtime % 2 === 0){
+                wx+=5;
+                wy+=5;
+                sx-=2;
+                sy-=2;
+            } else {
+                wx-=4;
+                wy-=4;
+                sx+=2;
+                sy+=2;
+            }
+        } else {
+            cool++;
+        }
     }
 };
 
@@ -705,8 +729,8 @@ var hud = {
         ctx.fillRect(w * 3 / 4 + 5, 35, w / 4 - 15.5, 20);
         ctx.fillStyle = '#33cc33';
         ctx.font = "10px monospace";
-        ctx.fillText(power + "/50", w - w * (1 / 8) - 15, 49);
-        ctx.fillRect(w - w * (1 / 4) + 6, 36, (power / 50) * (w / 4 - 17.5), 18);
+        ctx.fillText(Math.round(power) + "/100", w - w * (1 / 8) - 15, 49);
+        ctx.fillRect(w - w * (1 / 4) + 6, 36, (power / 100) * (w / 4 - 17.5), 18);
     },
     
     score: function() {
@@ -754,7 +778,7 @@ function main(timestamp) {
     hud.full();
     
     if (cool > 0 && regeneration === false && attackNorm === false && attackPush === false) {
-        cool-= 1.25;
+        cool-= 0.25;
         playerColor = '#adedff';
     }
     
