@@ -10,8 +10,8 @@ var h = c.height; //Canvas height
 var xMain = true; //Main session
 var time; //game counter
 var atime = 0; //attack counter
-var ptime = 0;
-var rtime = 0;
+var ptime = 0; //push attack counter
+var rtime = 0; //regenerate counter
 var sx = 30; //Player placement x
 var sy = 100; //Player placement y
 var wx = 50; //Player width
@@ -224,8 +224,8 @@ var character = {
             if ((e.keyCode == 38 || e.keyCode == 87)) uDown = true;
             if (e.keyCode == 37 || e.keyCode == 65) lDown = true;
             if (e.keyCode == 32 && cool === 0) attackNorm = true;
-            else if (e.keyCode == 90 && cool === 0 && power >= 10) attackPush = true;
-            else if (e.keyCode == 88 && cool === 0 && power > 0) attackRegen = true;
+            else if ((e.keyCode == 81 || e.keyCode == 90) && cool === 0 && power >= 10) attackPush = true;
+            else if ((e.keyCode == 69 || e.keyCode == 88)&& cool === 0 && power > 0) attackRegen = true;
         }
         
         function keyUpHandler(e) {
@@ -233,7 +233,7 @@ var character = {
             if (e.keyCode == 39 || e.keyCode == 68) rDown = false;
             if (e.keyCode == 38 || e.keyCode == 87) uDown = false;
             if (e.keyCode == 37 || e.keyCode == 65) lDown = false;
-            if (e.keyCode == 88) attackRegen = false;
+            if (e.keyCode == 69 || e.keyCode == 88) attackRegen = false;
         }
         
     },
@@ -283,10 +283,14 @@ var character = {
             character.attack();
         } else if (attackPush && regeneration === false) {
             character.push();
-        } else if (attackRegen === false){
-        regeneration = false;
+        } else if (attackRegen){
+			regeneration = true;
+		} else if (attackRegen === false){
+        	regeneration = false;
         }
         
+		if(regeneration) character.regenerate();
+		
         if(tracker.edgeDetect('up', sx, sy, wx, wy) && tracker.edgeDetect('down', sx, sy, wx, wy) && tracker.edgeDetect('left', sx, sy, wx, wy) && tracker.edgeDetect('right', sx, sy, wx, wy)){
             sx = random.s(sx);
             sy = random.s(sy);
@@ -410,7 +414,8 @@ var character = {
     },
     
     regenerate: function(){
-        if(cool == 100){
+		rtime++;
+        if(cool == 50){
             justRegen = true;
             
             if(power <= 0){
@@ -420,18 +425,18 @@ var character = {
             if(rtime % 3 === 0 && power > 0) power-=1;
             if(health < 100) health++;
             if(rtime % 2 === 0){
-                wx+=5;
-                wy+=5;
+                wx+=6;
+                wy+=6;
                 sx-=2;
                 sy-=2;
             } else {
-                wx-=4;
-                wy-=4;
+                wx-=5;
+                wy-=5;
                 sx+=2;
                 sy+=2;
             }
         } else {
-            cool++;
+            cool+=0.25;
         }
     }
 };
