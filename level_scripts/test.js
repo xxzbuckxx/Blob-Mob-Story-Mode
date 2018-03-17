@@ -52,7 +52,7 @@ var regeneration = false;
 var justRegen = false;
 const layer1 = new Image(); //Level map
     layer1.src = "level_maps/test_map.png";
-const stageScale = 3;
+const stageScale = 5;
 const layer2 = new Image();
     layer2.src = "level_maps/test_map-2nd.png";
 
@@ -441,22 +441,25 @@ var character = {
     }
 };
 
-function enemy(state, type, enemspeed) {
+class enemy {
 
-    this.state = state, //Spawn, alive, push, dying, or dead
+    constructor(state, type, enemspeed){
+        this.state = state; //Spawn, alive, push, dying, or dead
 
-    this.type = type, //Regular or boss
+        this.type = type; //Regular or boss
 
-    this.speed = enemspeed * speed,
+        this.speed = enemspeed * speed;
     
-    this.bossIsAlive = false, //Boss not functional
+        this.bossIsAlive = false; //Boss not functional
+    }
+    
 
-    this.spawn = function() {
+    spawn() {
         random.randomLocation(this);
         this.state = 'alive';
-    },
+    }
 
-    this.draw = function() {
+    draw() {
         ctx.lineWidth = 1;
         const randNum = Math.round(Math.random() * 2);
         const erandomColor = ecolors[randNum];
@@ -507,9 +510,9 @@ function enemy(state, type, enemspeed) {
         ctx.bezierCurveTo(this.esx + this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy);
         ctx.stroke();
         ctx.closePath();
-    },
+    }
 
-    this.drawBoss = function() {
+    drawBoss() {
         ctx.lineWidth = 1;
         randNum = Math.round(Math.random() * 2);
         const ebrandomColor = ebcolors[randNum];
@@ -548,9 +551,9 @@ function enemy(state, type, enemspeed) {
         ctx.bezierCurveTo(this.esx + this.ewx / 8, this.esy + this.ewy - this.ewy / 3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy - this.ewy / 3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy);
         ctx.stroke();
         ctx.closePath();
-    },
+    }
 
-    this.move = function() {
+    move() {
 
         if (this.esx > sx + wx / 10) this.esx -= this.speed;
         if (this.esx < sx + wx / 10) this.esx += this.speed;
@@ -560,9 +563,9 @@ function enemy(state, type, enemspeed) {
 
         this.esx = random.reg(this.esx);
         this.esy = random.reg(this.esy);
-    },
+    }
 
-    this.kill = function() {
+    kill() {
         this.ewx -= 2;
         this.ewy -= 2;
 
@@ -593,9 +596,9 @@ function enemy(state, type, enemspeed) {
             this.state = 'dead';
             if(this.type == 'boss') this.bossIsAlive = false;
         }
-    },
+    }
 
-    this.push = function() {
+    push() {
         if(this.type == 'regular')this.draw();
         else if(this.typ == 'boss')this.drawBoss();
         if (tracker.inarea(this)) {
@@ -608,9 +611,9 @@ function enemy(state, type, enemspeed) {
             this.esx = random.s(this.esx);
             this.esy = random.s(this.esy);
         }
-    },
+    }
         
-    this.stateDef = function(a) {
+    stateDef(a) {
         if (a.type == 'regular') {
             if (a.state == 'spawn' || a.state == 'dead') {
                 a.spawn();
@@ -634,7 +637,7 @@ function enemy(state, type, enemspeed) {
                 a.push();
             }
         }
-    };
+    }
 }
 
 var enemy1 = new enemy('none', 'regular', 0.3);
@@ -756,6 +759,14 @@ var hud = {
 };
 /*-----------------------------------------------*/
 
+/*--------------------ITEMS----------------------*/
+var item = {
+    power: function(x, y){
+        ctx.fillStyle = '#33cc33';
+        ctx.fillRect(ssx + x*stageScale,ssy + y*stageScale,10*stageScale,10*stageScale);
+    }
+};
+/*-----------------------------------------------*/
 
 
 /*-----------------------SESSIONS------------------------*/
@@ -775,6 +786,8 @@ function main(timestamp) {
     character.moveChar();
     
     hud.stage(2);
+    
+    item.power(120,100);
     
     character.drawChar();
     
