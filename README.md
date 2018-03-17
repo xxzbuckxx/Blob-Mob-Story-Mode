@@ -1,4 +1,4 @@
-# Bolb Mob Story Mode
+# Blob Mob Story Mode
 
 **Version 1.0.0**
 
