@@ -18,6 +18,8 @@ var wx = 50; //Player width
 var wy = 50; //Player height
 var ssx = 0; //Stage placement x
 var ssy = 0; //Stage placement y
+var shiftIX = 0; //Item shift x 
+var shiftIY = 0; //Item shift y
 var playerColor = '#ffd6cc'; //Player color
 var esx = 0; //Enemy object x cordinate
 var esy = 0; //Enemy object y cordinate
@@ -202,6 +204,10 @@ function resize() {
         c.height = ch - 22;
         sx = (sx / w) * c.width;
         sy = (sy / h) * c.height;
+        wx = (wx / w) * c.width;
+        wy = (wy / h) * c.height;
+        //shiftIX = 50;
+        //shiftIY = 50;
         w = c.width;
         h = c.height;
     }
@@ -292,10 +298,10 @@ var character = {
 		if(regeneration) character.regenerate();
 		
         if(tracker.edgeDetect('up', sx, sy, wx, wy) && tracker.edgeDetect('down', sx, sy, wx, wy) && tracker.edgeDetect('left', sx, sy, wx, wy) && tracker.edgeDetect('right', sx, sy, wx, wy)){
-            sx = random.s(sx);
-            sy = random.s(sy);
-            wx = random.reg(wx);
-            wy = random.reg(wy);
+            //sx = random.s(sx);
+            //sy = random.s(sy);
+            //wx = random.reg(wx);
+            //wy = random.reg(wy);
         }
     },
     
@@ -763,7 +769,7 @@ var hud = {
 var item = {
     power: function(x, y){
         ctx.fillStyle = '#33cc33';
-        ctx.fillRect(ssx + x*stageScale,ssy + y*stageScale,10*stageScale,10*stageScale);
+        ctx.fillRect(shiftIX + ssx + x*stageScale, shiftIY + ssy + y*stageScale,10*stageScale,10*stageScale);
     }
 };
 /*-----------------------------------------------*/
