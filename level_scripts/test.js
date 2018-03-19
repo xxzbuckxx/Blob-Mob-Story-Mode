@@ -55,6 +55,8 @@ const layer1 = new Image(); //Level map
 const stageScale = 5;
 const layer2 = new Image();
     layer2.src = "level_maps/test_map-2nd.png";
+const layer3 = new Image();
+    layer3.src = "level_maps/test_map-3rd.png";
 
 /*---------------HELPER FUNCTIONS---------------*/
 var random = {
@@ -347,16 +349,16 @@ var character = {
         else if (atime < 20 && recent == 'left' && tracker.edgeDetect('left', sx, sy, wx, wy)) sx -= 3;
         else if (atime > 20 && recent == 'left' && tracker.edgeDetect('left', sx, sy, wx, wy)) sx += 3;
         else if (atime > 20 && recent == 'right' && tracker.edgeDetect('right', sx, sy, wx, wy)) sx -= 3;
-
+        
         if (atime < 20 && recent == 'down' && tracker.edgeDetect('down', sx, sy, wx, wy)) sy += 3;
         else if (atime < 20 && recent == 'up' && tracker.edgeDetect('up', sx, sy, wx, wy)) sy -= 3;
         else if (atime > 20 && recent == 'up' && tracker.edgeDetect('up', sx, sy, wx, wy)) sy += 3;
         else if (atime > 20 && recent == 'down' && tracker.edgeDetect('down', sx, sy, wx, wy)) sy -= 3;
-
+        
         enemies.forEach(function(item, index, arr){
             if (atime == 5 && tracker.touch(item) && item.state != 'dead') arr[index].state = 'dying';
         });
-
+        
         if (atime >= 40) {
             attackNorm = false;
             slisten = true;
@@ -372,7 +374,7 @@ var character = {
         pushDraw = true;
         playerColor = '#adedff';
         ptime++;
-
+        
         if (ptime <= 28) {
             r -= 0.2;
             cool += 1;
@@ -451,6 +453,10 @@ class enemy {
         this.speed = enemspeed * speed;
     
         this.bossIsAlive = false; //Boss not functional
+        
+        this.esx = esx;
+        
+        this.esy = esy;
     }
     
 
@@ -701,17 +707,22 @@ var hud = {
             case 1:
                 ctx.fillStyle = '#fffbf9';
                 ctx.fillRect(0, 0, w, h);
-                ctx.drawImage(layer1, ssx, ssy, w*stageScale, h*stageScale);
+                ctx.drawImage(layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
                 break;
             case 2:
                 ctx.fillStyle = '#fffbf9';
                 ctx.fillRect(0, 0, w, h);
-                ctx.drawImage(layer2, ssx, ssy, w*stageScale, h*stageScale);
+                ctx.drawImage(layer2, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                break;
+            case 3:
+                ctx.fillStyle = '#fffbf9';
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(layer3, ssx, ssy, 2000*stageScale, 2000*stageScale);
                 break;
             default:
                 ctx.fillStyle = '#fffbf9';
                 ctx.fillRect(0, 0, w, h);
-                ctx.drawImage(layer1, ssx, ssy, w*stageScale, h*stageScale);
+                ctx.drawImage(layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
                 break;
         }
     },
@@ -792,6 +803,8 @@ function main(timestamp) {
     character.drawChar();
     
     //enemySpawn();
+    
+    //hud.stage(3);
     
     hud.full();
     
