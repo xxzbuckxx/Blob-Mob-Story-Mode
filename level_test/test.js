@@ -52,10 +52,10 @@ var speed = 1.5; //Enemy speed
 var regeneration = false;
 var justRegen = false;
 const layer1 = new Image(); //Level map
-    layer1.src = "level_maps/test_map.png";
+    layer1.src = "level_test/test_map.png";
 const stageScale = 5;
 const layer2 = new Image();
-    layer2.src = "level_maps/test_map-2nd.png";
+    layer2.src = "level_test/test_map-2nd.png";
 const layer3 = new Image();
     //layer3.src = "level_maps/test_map-3rd.png";
 
@@ -185,7 +185,7 @@ var tracker = {
     
     touch: {
         enemy: function(e){
-            if (((sx <= ssx + this.esx*stageScale && ssx + this.esx*stageScale <= sx + wx) && (sy <= ssy + this.esy*stageScale && ssy + this.esy*stageScale <= sy + wy)) || ((sx <= ssx + this.esx*stageScale + e.ewx*stageScale && ssx + this.esx*stageScale + e.ewx*stageScale <= sx + wx) && (sy <= ssy + this.esy*stageScale + e.ewy*stageScale && ssy + this.esy*stageScale + e.ewy*stageScale <= sy + wy))) return true;
+            if (((sx <= this.esx && this.esx <= sx + wx) && (sy <= this.esy && this.esy <= sy + wy)) || ((sx <= this.esx + e.ewx*stageScale && this.esx + e.ewx*stageScale <= sx + wx) && (sy <= this.esy + e.ewy*stageScale && this.esy + e.ewy*stageScale <= sy + wy))) return true;
             return false;
         },
         
@@ -521,22 +521,22 @@ function enemy(state, type, enemspeed){
         ctx.beginPath();
         
         //Draws Body
-        ctx.moveTo(ssx + this.esx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale);
-        ctx.bezierCurveTo(ssx + this.esx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale - this.ewy*stageScale / 4,
-                          ssx + this.esx*stageScale + this.ewx*stageScale + this.ewx*stageScale / 8, ssy + this.esy*stageScale - this.ewy*stageScale / 4,
-                          ssx + this.esx*stageScale + this.ewx*stageScale + this.ewx*stageScale / 8, ssy + this.esy*stageScale);
+        ctx.moveTo(this.esx - this.ewx / 8, this.esy);
+        ctx.bezierCurveTo(this.esx - this.ewx / 8, this.esy - this.ewy / 4,
+                          this.esx + this.ewx + this.ewx / 8, this.esy - this.ewy / 4,
+                          this.esx + this.ewx + this.ewx / 8, this.esy);
 
-        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewx*stageScale * 2, ssy + this.esy*stageScale,
-                          ssx + this.esx*stageScale + this.ewx*stageScale * 2, ssy + this.esy*stageScale + this.ewy*stageScale,
-                          ssx + this.esx*stageScale + this.ewx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale);
+        ctx.bezierCurveTo(this.esx + this.ewx * 2, this.esy,
+                          this.esx + this.ewx * 2, this.esy + this.ewy,
+                          this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy);
 
-        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale * 1.75,
-                          ssx + this.esx*stageScale - this.ewx*stageScale * 2, ssy + this.esy*stageScale + this.ewy*stageScale / 4,
-                          ssx + this.esx*stageScale, ssy + this.esy*stageScale + this.ewy*stageScale / 2);
+        ctx.bezierCurveTo(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy * 1.75,
+                          this.esx - this.ewx * 2, this.esy + this.ewy / 4,
+                          this.esx, this.esy + this.ewy / 2);
 
-        ctx.bezierCurveTo(ssx + this.esx*stageScale - this.ewx*stageScale, ssy + this.esy*stageScale + this.ewy*stageScale / 2,
-                          ssx + this.esx*stageScale - this.ewx*stageScale / 2, ssy + this.esy*stageScale,
-                          ssx + this.esx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale);
+        ctx.bezierCurveTo(this.esx - this.ewx, this.esy + this.ewy / 2,
+                          this.esx - this.ewx / 2, this.esy,
+                          this.esx - this.ewx / 8, this.esy);
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
@@ -546,20 +546,20 @@ function enemy(state, type, enemspeed){
         //Draws Left Eye
         ctx.beginPath();
         ctx.fillStyle = 'black';
-        ctx.arc(ssx + this.esx*stageScale + this.ewx*stageScale / 6, ssy + this.esy*stageScale + this.ewy*stageScale / 6, (this.ewx*stageScale / 4 + this.ewy*stageScale / 4) / 4, 0, 2 * Math.PI);
+        ctx.arc(this.esx + this.ewx / 6, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 4, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.closePath();
 
         //Draws Right Eye
         ctx.beginPath();
-        ctx.arc(ssx + this.esx*stageScale + this.ewx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale / 6, (this.ewx*stageScale / 4 + this.ewy*stageScale / 4) / 6, 0, 2 * Math.PI);
+        ctx.arc(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 6, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.closePath();
 
         //Draws Mouth
         ctx.beginPath();
-        ctx.moveTo(ssx + this.esx*stageScale + this.ewx*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale);
-        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewy*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale - this.ewy*stageScale /3, ssx + this.esx*stageScale + this.ewx*stageScale - this.ewy*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale - this.ewy*stageScale /3, ssx + this.esx*stageScale + this.ewx*stageScale - this.ewy*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale);
+        ctx.moveTo(this.esx + this.ewx / 8, this.esy + this.ewy);
+        ctx.bezierCurveTo(this.esx + this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy);
         ctx.stroke();
         ctx.closePath();
     };
@@ -606,16 +606,16 @@ function enemy(state, type, enemspeed){
     };
 
     this.move = function() {
-        //this.esx = ssx + this.esx*stageScale;
+        //this.esx = this.esx;
         //this.esy = ssx + this.esy*stageScale;
         
-        if (ssx + this.esx*stageScale > sx + wx / 10) this.esx = (this.esx - this.speed) / stageScale - ssx;
-        if (ssx + this.esx*stageScale < sx + wx / 10) this.esx = (this.esx + this.speed) / stageScale - ssx;
+        if (this.esx > sx + wx / 10) this.esx = (this.esx - this.speed) / stageScale - ssx;
+        if (this.esx < sx + wx / 10) this.esx = (this.esx + this.speed) / stageScale - ssx;
 
         if (this.esy > sy + wy / 10) this.esy -= this.speed;
         if (this.esy < sy + wy / 10) this.esy += this.speed;
 
-        ssx + this.esx*stageScale = random.reg(ssx + this.esx*stageScale);
+        this.esx= random.reg(this.esx);
         this.esy = random.reg(this.esy);
     };
 
