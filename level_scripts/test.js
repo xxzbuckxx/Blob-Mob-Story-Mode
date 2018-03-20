@@ -31,7 +31,7 @@ var rDown = false; //Right arrow or D is being pressed
 var lDown = false; //Left arrow or A
 var uDown = false; //Up arrow or W
 var dDown = false; //Down arrow or S
-var pause = true;
+var pause = false;
 var attackNorm = false; //Basic attack is being executed (space pressed)
 var attackPush = false; //Push attack (Q pressed)
 var attackRegen = false; //Regenerate (E pressed)
@@ -185,7 +185,7 @@ var tracker = {
     
     touch: {
         enemy: function(e){
-            if (((sx <= e.esx && e.esx <= sx + wx) && (sy <= e.esy && e.esy <= sy + wy)) || ((sx <= e.esx + e.ewx && e.esx + e.ewx <= sx + wx) && (sy <= e.esy + e.ewy && e.esy + e.ewy <= sy + wy))) return true;
+            if (((sx <= ssx + this.esx*stageScale && ssx + this.esx*stageScale <= sx + wx) && (sy <= ssy + this.esy*stageScale && ssy + this.esy*stageScale <= sy + wy)) || ((sx <= ssx + this.esx*stageScale + e.ewx*stageScale && ssx + this.esx*stageScale + e.ewx*stageScale <= sx + wx) && (sy <= ssy + this.esy*stageScale + e.ewy*stageScale && ssy + this.esy*stageScale + e.ewy*stageScale <= sy + wy))) return true;
             return false;
         },
         
@@ -399,9 +399,11 @@ var character = {
         else if (atime > 20 && recent == 'up' && tracker.edgeDetect('up', sx, sy, wx, wy)) sy += 3;
         else if (atime > 20 && recent == 'down' && tracker.edgeDetect('down', sx, sy, wx, wy)) sy -= 3;
         
-        enemies.forEach(function(item, index, arr){
+        /*enemies.forEach(function(item, index, arr){
             if (atime == 5 && tracker.touch.enemy(item) && item.state != 'dead') arr[index].state = 'dying';
-        });
+        });*/
+        
+        if(atime == 20 && tracker.touch.enemy(enemy1) && enemy.state != 'dead') enemy1.state = 'dying';
         
         if (atime >= 40) {
             attackNorm = false;
@@ -429,9 +431,10 @@ var character = {
             r += 3;
             cool += 0.75;
         } else if (80 <= ptime && ptime < 130) {
-            enemies.forEach(function(item, index, arr){
+            /*enemies.forEach(function(item, index, arr){
                 arr[index].state = 'push';
-            });
+            });*/
+            enemy1.state = 'push';
             
             power -= 0.5;
             r += 4;
@@ -446,9 +449,10 @@ var character = {
             attackPush = false;
             pushDraw = false;
             
-            enemies.forEach(function(item, index, arr){
+            /*enemies.forEach(function(item, index, arr){
                 arr[index].state = 'alive';
-            });
+            });*/
+            enemy1.state = 'alive';
         } /*else if (tracker.collide()) {
             attackPush = false;
             //shrink();
@@ -469,7 +473,7 @@ var character = {
                 attackRegen = false;
             }
             if(rtime % 3 === 0 && power > 0) power-=1;
-            if(health < 100) health++;
+            if(rtime % 3 === 0 && health < 100) health++;
             if(rtime % 2 === 0){
                 wx+=6;
                 wy+=6;
@@ -482,34 +486,32 @@ var character = {
                 sy+=2;
             }
         } else {
-            cool+=0.25;
+            if(rtime % 2 === 0) cool+=0.25;
         }
     }
 };
 
-class enemy {
-
-    constructor(state, type, enemspeed){
-        this.state = state; //Spawn, alive, push, dying, or dead
-
-        this.type = type; //Regular or boss
-
-        this.speed = enemspeed * speed;
+function enemy(state, type, enemspeed){
+    this.state = state; //Spawn, alive, push, dying, or dead
     
-        this.bossIsAlive = false; //Boss not functional
-        
-        this.esx = esx;
-        
-        this.esy = esy;
-    }
+    this.type = type; //Regular or boss
     
+    this.speed = enemspeed * speed;
+    
+    this.bossIsAlive = false; //Boss not functional
+    
+    this.esx = esx;
+    
+    this.esy = esy;
 
-    spawn() {
-        random.randomLocation(this);
+    this.spawn = function() {
+        //random.randomLocation(this);
+        this.esx = 50;
+        this.esy = 50;
         this.state = 'alive';
-    }
+    };
 
-    draw() {
+    this.draw = function() {
         ctx.lineWidth = 1;
         const randNum = Math.round(Math.random() * 2);
         const erandomColor = ecolors[randNum];
@@ -519,22 +521,22 @@ class enemy {
         ctx.beginPath();
         
         //Draws Body
-        ctx.moveTo(this.esx - this.ewx / 8, this.esy);
-        ctx.bezierCurveTo(this.esx - this.ewx / 8, this.esy - this.ewy / 4,
-                          this.esx + this.ewx + this.ewx / 8, this.esy - this.ewy / 4,
-                          this.esx + this.ewx + this.ewx / 8, this.esy);
+        ctx.moveTo(ssx + this.esx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale - this.ewy*stageScale / 4,
+                          ssx + this.esx*stageScale + this.ewx*stageScale + this.ewx*stageScale / 8, ssy + this.esy*stageScale - this.ewy*stageScale / 4,
+                          ssx + this.esx*stageScale + this.ewx*stageScale + this.ewx*stageScale / 8, ssy + this.esy*stageScale);
 
-        ctx.bezierCurveTo(this.esx + this.ewx * 2, this.esy,
-                          this.esx + this.ewx * 2, this.esy + this.ewy,
-                          this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewx*stageScale * 2, ssy + this.esy*stageScale,
+                          ssx + this.esx*stageScale + this.ewx*stageScale * 2, ssy + this.esy*stageScale + this.ewy*stageScale,
+                          ssx + this.esx*stageScale + this.ewx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale);
 
-        ctx.bezierCurveTo(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy * 1.75,
-                          this.esx - this.ewx * 2, this.esy + this.ewy / 4,
-                          this.esx, this.esy + this.ewy / 2);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale * 1.75,
+                          ssx + this.esx*stageScale - this.ewx*stageScale * 2, ssy + this.esy*stageScale + this.ewy*stageScale / 4,
+                          ssx + this.esx*stageScale, ssy + this.esy*stageScale + this.ewy*stageScale / 2);
 
-        ctx.bezierCurveTo(this.esx - this.ewx, this.esy + this.ewy / 2,
-                          this.esx - this.ewx / 2, this.esy,
-                          this.esx - this.ewx / 8, this.esy);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale - this.ewx*stageScale, ssy + this.esy*stageScale + this.ewy*stageScale / 2,
+                          ssx + this.esx*stageScale - this.ewx*stageScale / 2, ssy + this.esy*stageScale,
+                          ssx + this.esx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale);
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
@@ -544,25 +546,25 @@ class enemy {
         //Draws Left Eye
         ctx.beginPath();
         ctx.fillStyle = 'black';
-        ctx.arc(this.esx + this.ewx / 6, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 4, 0, 2 * Math.PI);
+        ctx.arc(ssx + this.esx*stageScale + this.ewx*stageScale / 6, ssy + this.esy*stageScale + this.ewy*stageScale / 6, (this.ewx*stageScale / 4 + this.ewy*stageScale / 4) / 4, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.closePath();
 
         //Draws Right Eye
         ctx.beginPath();
-        ctx.arc(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 6, 0, 2 * Math.PI);
+        ctx.arc(ssx + this.esx*stageScale + this.ewx*stageScale - this.ewx*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale / 6, (this.ewx*stageScale / 4 + this.ewy*stageScale / 4) / 6, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.closePath();
 
         //Draws Mouth
         ctx.beginPath();
-        ctx.moveTo(this.esx + this.ewx / 8, this.esy + this.ewy);
-        ctx.bezierCurveTo(this.esx + this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy);
+        ctx.moveTo(ssx + this.esx*stageScale + this.ewx*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewy*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale - this.ewy*stageScale /3, ssx + this.esx*stageScale + this.ewx*stageScale - this.ewy*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale - this.ewy*stageScale /3, ssx + this.esx*stageScale + this.ewx*stageScale - this.ewy*stageScale / 8, ssy + this.esy*stageScale + this.ewy*stageScale);
         ctx.stroke();
         ctx.closePath();
-    }
+    };
 
-    drawBoss() {
+    this.drawBoss = function() {
         ctx.lineWidth = 1;
         randNum = Math.round(Math.random() * 2);
         const ebrandomColor = ebcolors[randNum];
@@ -601,24 +603,30 @@ class enemy {
         ctx.bezierCurveTo(this.esx + this.ewx / 8, this.esy + this.ewy - this.ewy / 3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy - this.ewy / 3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy);
         ctx.stroke();
         ctx.closePath();
-    }
+    };
 
-    move() {
-
-        if (this.esx > sx + wx / 10) this.esx -= this.speed;
-        if (this.esx < sx + wx / 10) this.esx += this.speed;
+    this.move = function() {
+        //this.esx = ssx + this.esx*stageScale;
+        //this.esy = ssx + this.esy*stageScale;
+        
+        if (ssx + this.esx*stageScale > sx + wx / 10) this.esx = (this.esx - this.speed) / stageScale - ssx;
+        if (ssx + this.esx*stageScale < sx + wx / 10) this.esx = (this.esx + this.speed) / stageScale - ssx;
 
         if (this.esy > sy + wy / 10) this.esy -= this.speed;
         if (this.esy < sy + wy / 10) this.esy += this.speed;
 
-        this.esx = random.reg(this.esx);
+        ssx + this.esx*stageScale = random.reg(ssx + this.esx*stageScale);
         this.esy = random.reg(this.esy);
-    }
+    };
 
-    kill() {
-        this.ewx -= 2;
-        this.ewy -= 2;
+    this.kill = function() {
+        this.ewx -= 0.5;
+        this.ewy -= 0.5;
+        this.esx += 0.25;
+        this.esy += 0.25;
 
+        
+        ctx.fillStyle = 'black';
         //Draws Body
         ctx.moveTo(this.esx - this.ewx / 8, this.esy);
         ctx.bezierCurveTo(this.esx - this.ewx / 8, this.esy - this.ewy / 4,
@@ -646,9 +654,9 @@ class enemy {
             this.state = 'dead';
             if(this.type == 'boss') this.bossIsAlive = false;
         }
-    }
+    };
 
-    push() {
+    this.push = function() {
         if(this.type == 'regular')this.draw();
         else if(this.typ == 'boss')this.drawBoss();
         if (tracker.inarea(this)) {
@@ -661,9 +669,9 @@ class enemy {
             this.esx = random.s(this.esx);
             this.esy = random.s(this.esy);
         }
-    }
+    };
         
-    stateDef() {
+    this.stateDef = function() {
         if (this.type == 'regular') {
             if (this.state == 'spawn' || this.state == 'dead') {
                 this.spawn();
@@ -687,7 +695,7 @@ class enemy {
                 this.push();
             }
         }
-    }
+    };
 }
 
 var enemy1 = new enemy('none', 'regular', 0.3);
@@ -715,18 +723,15 @@ function stateDefinition(){
     });
 }
 
-var item1 = new ItemPow(100, 50, 'visible');
-var item2 = new ItemPow(120, 50, 'visible');
-var item3 = new ItemPow(140, 50, 'visible');
-var item4 = new ItemPow(160, 50, 'visible');
-var item5 = new ItemPow(180, 50, 'visible');
-var item6 = new ItemPow(200, 50, 'visible');
-var item7 = new ItemPow(220, 50, 'visible');
-var item8 = new ItemPow(240, 50, 'visible');
-var item9 = new ItemPow(260, 50, 'visible');
-var item10 = new ItemPow(280, 50, 'visible');
+var item1 = new ItemPow(93, 459, 'visible');
+var item2 = new ItemPow(200, 400, 'visible');
+var item3 = new ItemPow(240, 400, 'visible');
+var item4 = new ItemPow(285, 400, 'visible');
+var item5 = new ItemPow(400, 230, 'visible');
+var item6 = new ItemPow(423, 270, 'visible');
+var item7 = new ItemPow(370, 384, 'visible');
 
-items = [item1, item2, item3, item4, item5, item6, item7, item8, item9, item10];
+items = [item1, item2, item3, item4, item5, item6, item7];
 
 function itemDefinition(){
     items.forEach(function(item){
@@ -820,6 +825,7 @@ var hud = {
 
 
 /*-----------------------SESSIONS------------------------*/
+enemy1.state = 'spawn';
 function main(timestamp) {
     ctx.clearRect(0, 0, w, h);
     
@@ -835,7 +841,7 @@ function main(timestamp) {
     hud.stage(2);
     
 //Layer 3rd
-    //stateDefinition();
+    stateDefinition();
     
     items.forEach(function(element){
         if(tracker.touch.item(element) && element.state != 'hidden') element.disappear();
@@ -857,6 +863,15 @@ function main(timestamp) {
         cool-= 0.25;
         playerColor = '#adedff';
     }
+    
+     if (tracker.touch.enemy(enemy1)) {
+                health--;
+                playerColor = '#ff6d6d';
+                damaging = true;
+                regeneration = false;
+            } else {
+                damaging = false;
+            }
     
     if (cool === 0 && damaging === false) {
         playerColor = '#ffd6cc';
