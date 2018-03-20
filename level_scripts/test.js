@@ -39,6 +39,7 @@ var r = 5;
 var pushDraw = false;
 var slisten = true; //True when listen should be called
 var enemies; //Enemies array
+var items;
 var power = 100;
 var cool = 0;
 var health = 100;
@@ -56,7 +57,7 @@ const stageScale = 5;
 const layer2 = new Image();
     layer2.src = "level_maps/test_map-2nd.png";
 const layer3 = new Image();
-    layer3.src = "level_maps/test_map-3rd.png";
+    //layer3.src = "level_maps/test_map-3rd.png";
 
 /*---------------HELPER FUNCTIONS---------------*/
 var random = {
@@ -182,8 +183,23 @@ var tracker = {
         if (sx < 0 || sy < 0 || sx + wx > w || sy + wy > h) return true;
     },
     
-    touch: function(){
-        if (((sx <= enemy.esx && enemy.esx <= sx + wx) && (sy <= enemy.esy && enemy.esy <= sy + wy)) || ((sx <= enemy.esx + enemy.ewx && enemy.esx + enemy.ewx <= sx + wx) && (sy <= enemy.esy + enemy.ewy && enemy.esy + enemy.ewy <= sy + wy))) return true;
+    touch: {
+        enemy: function(e){
+            if (((sx <= e.esx && e.esx <= sx + wx) && (sy <= e.esy && e.esy <= sy + wy)) || ((sx <= e.esx + e.ewx && e.esx + e.ewx <= sx + wx) && (sy <= e.esy + e.ewy && e.esy + e.ewy <= sy + wy))) return true;
+            return false;
+        },
+        
+        item: function(i){
+            var x = ssx + i.ix*stageScale;
+            var y = ssy + i.iy*stageScale;
+            var wid = 10*stageScale;
+            if (((x >= sx && x <= sx + wx) && (y >= sy && y <= sy + wy)) ||
+                ((x + wid >= sx && x + wid <= sx + wx) && (y + wid >= sy && y + wid <= sy + wy)) ||
+                
+                ((x >= sx && x <= sx + wx) && (y + wid >= sy && y + wid <= sy + wy)) ||
+                ((x + wid >= sx && x + wid <= sx + wx) && (y >= sy && y <= sy + wy))) return true;
+            return false;
+        }
     },
     
     inarea: function(){
@@ -210,6 +226,34 @@ function resize() {
 }
 /*----------------------------------------------*/
 
+
+/*--------------------ITEMS----------------------*/
+function ItemPow(x, y, state){
+    this.ix = x;
+        
+    this.iy = y;
+    
+    this.state = state;
+    
+    this.draw = function(){
+        ctx.fillStyle = '#33cc33';
+        ctx.strokeStyle = 'black';
+        ctx.fillRect(ssx + this.ix*stageScale,ssy + this.iy*stageScale,10*stageScale,10*stageScale);
+        ctx.strokeRect(ssx + this.ix*stageScale,ssy + this.iy*stageScale,10*stageScale,10*stageScale);
+    };
+    
+    this.disappear = function(){
+        if(power + 25 <= 100) power+= 25;
+        else if(power + 25 > 100) power = 100;
+        
+        this.state = 'hidden';
+    };
+    
+    this.stateDef = function(){
+        if(this.state == 'visible') this.draw();
+    };
+}
+/*-----------------------------------------------*/
 
 
 /*-------------------CHARACTERS-------------------*/
@@ -356,7 +400,7 @@ var character = {
         else if (atime > 20 && recent == 'down' && tracker.edgeDetect('down', sx, sy, wx, wy)) sy -= 3;
         
         enemies.forEach(function(item, index, arr){
-            if (atime == 5 && tracker.touch(item) && item.state != 'dead') arr[index].state = 'dying';
+            if (atime == 5 && tracker.touch.enemy(item) && item.state != 'dead') arr[index].state = 'dying';
         });
         
         if (atime >= 40) {
@@ -619,28 +663,28 @@ class enemy {
         }
     }
         
-    stateDef(a) {
-        if (a.type == 'regular') {
-            if (a.state == 'spawn' || a.state == 'dead') {
-                a.spawn();
-            } else if (a.state == 'alive') {
-                if(pause === false) a.move();
-                a.draw();
-            } else if (a.state == 'dying') {
-                a.kill();
-            } else if (a.state == 'push') {
-                a.push();
+    stateDef() {
+        if (this.type == 'regular') {
+            if (this.state == 'spawn' || this.state == 'dead') {
+                this.spawn();
+            } else if (this.state == 'alive') {
+                if(pause === false) this.move();
+                this.draw();
+            } else if (this.state == 'dying') {
+                this.kill();
+            } else if (this.state == 'push') {
+                this.push();
             }
-        } else if (a.type == 'boss') {
-            if (a.state == 'spawn') {
-                a.spawn();
-            } else if (a.state == 'alive') {
-                if(pause === false) a.move();
-                a.drawBoss();
-            } else if (a.state == 'dying') {
-                a.kill();
-            } else if (a.state == 'push') {
-                a.push();
+        } else if (this.type == 'boss') {
+            if (this.state == 'spawn') {
+                this.spawn();
+            } else if (this.state == 'alive') {
+                if(pause === false) this.move();
+                this.drawBoss();
+            } else if (this.state == 'dying') {
+                this.kill();
+            } else if (this.state == 'push') {
+                this.push();
             }
         }
     }
@@ -663,24 +707,29 @@ var enemy14 = new enemy('none', 'regular', 1.8);
 var enemy15 = new enemy('none', 'regular', 2.1);
 //var enemy1 = new enemy('none', 'boss');
 
-enemies = [enemy1,
-           enemy2,
-           enemy3,
-           enemy4,
-           enemy5,
-           enemy6,
-           enemy7,
-           enemy8,
-           enemy9,
-           enemy10,
-           enemy11,
-           enemy12,
-           enemy13,
-           enemy14,
-           enemy15 ];
+enemies = [enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, enemy8, enemy9, enemy10, enemy11, enemy12, enemy13, enemy14, enemy15 ];
 
 function stateDefinition(){
     enemies.forEach(function(item){
+        item.stateDef();
+    });
+}
+
+var item1 = new ItemPow(100, 50, 'visible');
+var item2 = new ItemPow(120, 50, 'visible');
+var item3 = new ItemPow(140, 50, 'visible');
+var item4 = new ItemPow(160, 50, 'visible');
+var item5 = new ItemPow(180, 50, 'visible');
+var item6 = new ItemPow(200, 50, 'visible');
+var item7 = new ItemPow(220, 50, 'visible');
+var item8 = new ItemPow(240, 50, 'visible');
+var item9 = new ItemPow(260, 50, 'visible');
+var item10 = new ItemPow(280, 50, 'visible');
+
+items = [item1, item2, item3, item4, item5, item6, item7, item8, item9, item10];
+
+function itemDefinition(){
+    items.forEach(function(item){
         item.stateDef();
     });
 }
@@ -697,7 +746,6 @@ function enemeySpeed(){
     if(score >= 300)                speed=3;
 }
 /*-----------------------------------------------*/
-
 
 
 /*---------------HEADS UP DISPLAY----------------*/
@@ -770,42 +818,39 @@ var hud = {
 };
 /*-----------------------------------------------*/
 
-/*--------------------ITEMS----------------------*/
-var item = {
-    power: function(x, y){
-        ctx.fillStyle = '#33cc33';
-        ctx.fillRect(ssx + x*stageScale,ssy + y*stageScale,10*stageScale,10*stageScale);
-    }
-};
-/*-----------------------------------------------*/
-
 
 /*-----------------------SESSIONS------------------------*/
 function main(timestamp) {
     ctx.clearRect(0, 0, w, h);
     
-    time = timestamp;
-    
     resize(c);
     
+//Layer bottom
     hud.stage(1);
     
     character.listen();
     
-    //stateDefinition();
-    
     character.moveChar();
-    
+//Layer 2nd
     hud.stage(2);
     
-    item.power(120,100);
+//Layer 3rd
+    //stateDefinition();
+    
+    items.forEach(function(element){
+        if(tracker.touch.item(element) && element.state != 'hidden') element.disappear();
+    });
+    
+    itemDefinition();
     
     character.drawChar();
     
     //enemySpawn();
     
+//Layer 4th
     //hud.stage(3);
     
+//Layer top
     hud.full();
     
     if (cool > 0 && regeneration === false && attackNorm === false && attackPush === false) {
