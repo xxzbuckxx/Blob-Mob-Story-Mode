@@ -57,14 +57,14 @@ const stageScale = 5;
 const layer2 = new Image();
     layer2.src = "level_test/test_map-2nd.png";
 const layer3 = new Image();
-    //layer3.src = "level_maps/test_map-3rd.png";
+    layer3.src = "level_test/test_map-3rd.png";
 
 /*---------------HELPER FUNCTIONS---------------*/
 var random = {
 	reg: function(a) {
     	var rand = Math.random() * 10;
-    	if (rand - 5 > 0 && a < 60) return a + 0.5;
-    	else if (rand - 5 <= 0 && a > 40) return a - 0.5;
+    	if (rand - 5 > 0 && a < 60) return a + 0.1;
+    	else if (rand - 5 <= 0 && a > 40) return a - 0.1;
     	else return a;
 	},
 
@@ -185,7 +185,7 @@ var tracker = {
     
     touch: {
         enemy: function(e){
-            if (((sx <= this.esx && this.esx <= sx + wx) && (sy <= this.esy && this.esy <= sy + wy)) || ((sx <= this.esx + e.ewx*stageScale && this.esx + e.ewx*stageScale <= sx + wx) && (sy <= this.esy + e.ewy*stageScale && this.esy + e.ewy*stageScale <= sy + wy))) return true;
+            if (((sx <= ssx + e.esx*stageScale && ssx + e.esx*stageScale <= sx + wx) && (sy <= ssy + e.esy*stageScale && ssy + e.esy*stageScale <= sy + wy)) || ((sx <= ssx + e.esx*stageScale + e.ewx && ssx + e.esx*stageScale + e.ewx <= sx + wx) && (sy <= ssy + e.esy*stageScale + e.ewy && ssy + e.esy*stageScale + e.ewy <= sy + wy))) return true;
             return false;
         },
         
@@ -500,14 +500,14 @@ function enemy(state, type, enemspeed){
     
     this.bossIsAlive = false; //Boss not functional
     
-    this.esx = esx;
+    this.esx = ssx + esx*stageScale;
     
-    this.esy = esy;
+    this.esy = ssy + esy*stageScale;
 
     this.spawn = function() {
-        //random.randomLocation(this);
-        this.esx = 50;
-        this.esy = 50;
+        random.randomLocation(this);
+        //this.esx = 50;
+        //this.esy = 50;
         this.state = 'alive';
     };
 
@@ -516,27 +516,28 @@ function enemy(state, type, enemspeed){
         const randNum = Math.round(Math.random() * 2);
         const erandomColor = ecolors[randNum];
         ctx.fillStyle = erandomColor;
-        this.ewx = wx / 2 - 10;
-        this.ewy = wy - 10;
+        
+        this.ewx = (wx / 2 - 10)*1.2;
+        this.ewy = (wy - 10)*1.2;
         ctx.beginPath();
         
         //Draws Body
-        ctx.moveTo(this.esx - this.ewx / 8, this.esy);
-        ctx.bezierCurveTo(this.esx - this.ewx / 8, this.esy - this.ewy / 4,
-                          this.esx + this.ewx + this.ewx / 8, this.esy - this.ewy / 4,
-                          this.esx + this.ewx + this.ewx / 8, this.esy);
+        ctx.moveTo(ssx + this.esx*stageScale - this.ewx / 8, ssy + this.esy*stageScale);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale - this.ewx / 8, ssy + this.esy*stageScale - this.ewy / 4,
+                          ssx + this.esx*stageScale + this.ewx + this.ewx / 8, ssy + this.esy*stageScale - this.ewy / 4,
+                          ssx + this.esx*stageScale + this.ewx + this.ewx / 8, ssy + this.esy*stageScale);
 
-        ctx.bezierCurveTo(this.esx + this.ewx * 2, this.esy,
-                          this.esx + this.ewx * 2, this.esy + this.ewy,
-                          this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewx * 2, ssy + this.esy*stageScale,
+                          ssx + this.esx*stageScale + this.ewx * 2, ssy + this.esy*stageScale + this.ewy,
+                          ssx + this.esx*stageScale + this.ewx - this.ewx / 8, ssy + this.esy*stageScale + this.ewy);
 
-        ctx.bezierCurveTo(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy * 1.75,
-                          this.esx - this.ewx * 2, this.esy + this.ewy / 4,
-                          this.esx, this.esy + this.ewy / 2);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewx - this.ewx / 8, ssy + this.esy*stageScale + this.ewy * 1.75,
+                          ssx + this.esx*stageScale - this.ewx * 2, ssy + this.esy*stageScale + this.ewy / 4,
+                          ssx + this.esx*stageScale, ssy + this.esy*stageScale + this.ewy / 2);
 
-        ctx.bezierCurveTo(this.esx - this.ewx, this.esy + this.ewy / 2,
-                          this.esx - this.ewx / 2, this.esy,
-                          this.esx - this.ewx / 8, this.esy);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale - this.ewx, ssy + this.esy*stageScale + this.ewy / 2,
+                          ssx + this.esx*stageScale - this.ewx / 2, ssy + this.esy*stageScale,
+                          ssx + this.esx*stageScale - this.ewx / 8, ssy + this.esy*stageScale);
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
@@ -546,20 +547,20 @@ function enemy(state, type, enemspeed){
         //Draws Left Eye
         ctx.beginPath();
         ctx.fillStyle = 'black';
-        ctx.arc(this.esx + this.ewx / 6, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 4, 0, 2 * Math.PI);
+        ctx.arc(ssx + this.esx*stageScale + this.ewx / 6, ssy + this.esy*stageScale + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 4, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.closePath();
 
         //Draws Right Eye
         ctx.beginPath();
-        ctx.arc(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 6, 0, 2 * Math.PI);
+        ctx.arc(ssx + this.esx*stageScale + this.ewx - this.ewx / 8, ssy + this.esy*stageScale + this.ewy / 6, (this.ewx / 4 + this.ewy / 4) / 6, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.closePath();
 
         //Draws Mouth
         ctx.beginPath();
-        ctx.moveTo(this.esx + this.ewx / 8, this.esy + this.ewy);
-        ctx.bezierCurveTo(this.esx + this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy - this.ewy /3, this.esx + this.ewx - this.ewy / 8, this.esy + this.ewy);
+        ctx.moveTo(ssx + this.esx*stageScale + this.ewx / 8, ssy + this.esy*stageScale + this.ewy);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewy / 8, ssy + this.esy*stageScale + this.ewy - this.ewy /3, ssx + this.esx*stageScale + this.ewx - this.ewy / 8, ssy + this.esy*stageScale + this.ewy - this.ewy /3, ssx + this.esx*stageScale + this.ewx - this.ewy / 8, ssy + this.esy*stageScale + this.ewy);
         ctx.stroke();
         ctx.closePath();
     };
@@ -606,14 +607,14 @@ function enemy(state, type, enemspeed){
     };
 
     this.move = function() {
-        //this.esx = this.esx;
-        //this.esy = ssx + this.esy*stageScale;
+        //this.esx = ssx + stageScale;
+        //this.esy = ssy + stageScale;
         
-        if (this.esx > sx + wx / 10) this.esx = (this.esx - this.speed) / stageScale - ssx;
-        if (this.esx < sx + wx / 10) this.esx = (this.esx + this.speed) / stageScale - ssx;
+        if (ssx + this.esx*stageScale > sx + wx / 10) this.esx -= this.speed;
+        if (ssx + this.esx*stageScale < sx + wx / 10) this.esx += this.speed;
 
-        if (this.esy > sy + wy / 10) this.esy -= this.speed;
-        if (this.esy < sy + wy / 10) this.esy += this.speed;
+        if (ssy + this.esy*stageScale > sy + wy / 10) this.esy -= this.speed;
+        if (ssy + this.esy*stageScale < sy + wy / 10) this.esy += this.speed;
 
         this.esx= random.reg(this.esx);
         this.esy = random.reg(this.esy);
@@ -622,28 +623,28 @@ function enemy(state, type, enemspeed){
     this.kill = function() {
         this.ewx -= 0.5;
         this.ewy -= 0.5;
-        this.esx += 0.25;
-        this.esy += 0.25;
+        this.esx += 0.1;
+        this.esy += 0.1;
 
         
         ctx.fillStyle = 'black';
         //Draws Body
-        ctx.moveTo(this.esx - this.ewx / 8, this.esy);
-        ctx.bezierCurveTo(this.esx - this.ewx / 8, this.esy - this.ewy / 4,
-                          this.esx + this.ewx + this.ewx / 8, this.esy - this.ewy / 4,
-                          this.esx + this.ewx + this.ewx / 8, this.esy);
+        ctx.moveTo(ssx + this.esx*stageScale - this.ewx / 8, ssy + this.esy*stageScale);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale - this.ewx / 8, ssy + this.esy*stageScale - this.ewy / 4,
+                          ssx + this.esx*stageScale + this.ewx + this.ewx / 8, ssy + this.esy*stageScale - this.ewy / 4,
+                          ssx + this.esx*stageScale + this.ewx + this.ewx / 8, ssy + this.esy*stageScale);
 
-        ctx.bezierCurveTo(this.esx + this.ewx * 2, this.esy,
-                          this.esx + this.ewx * 2, this.esy + this.ewy,
-                          this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewx * 2, ssy + this.esy*stageScale,
+                          ssx + this.esx*stageScale + this.ewx * 2, ssy + this.esy*stageScale + this.ewy,
+                          ssx + this.esx*stageScale + this.ewx - this.ewx / 8, ssy + this.esy*stageScale + this.ewy);
 
-        ctx.bezierCurveTo(this.esx + this.ewx - this.ewx / 8, this.esy + this.ewy * 1.75,
-                          this.esx - this.ewx * 2, this.esy + this.ewy / 4,
-                          this.esx, this.esy + this.ewy / 2);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale + this.ewx - this.ewx / 8, ssy + this.esy*stageScale + this.ewy * 1.75,
+                          ssx + this.esx*stageScale - this.ewx * 2, ssy + this.esy*stageScale + this.ewy / 4,
+                          ssx + this.esx*stageScale, ssy + this.esy*stageScale + this.ewy / 2);
 
-        ctx.bezierCurveTo(this.esx - this.ewx, this.esy + this.ewy / 2,
-                          this.esx - this.ewx / 2, this.esy,
-                          this.esx - this.ewx / 8, this.esy);
+        ctx.bezierCurveTo(ssx + this.esx*stageScale - this.ewx, ssy + this.esy*stageScale + this.ewy / 2,
+                          ssx + this.esx*stageScale - this.ewx / 2, ssy + this.esy*stageScale,
+                          ssx + this.esx*stageScale - this.ewx / 8, ssy + this.esy*stageScale);
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
@@ -698,24 +699,17 @@ function enemy(state, type, enemspeed){
     };
 }
 
-var enemy1 = new enemy('none', 'regular', 0.3);
-var enemy2 = new enemy('none', 'regular', 1);
-var enemy3 = new enemy('none', 'regular', 1.2);
-var enemy4 = new enemy('none', 'regular', 0.9);
-var enemy5 = new enemy('none', 'regular', 1.4);
-var enemy6 = new enemy('none', 'regular', 1.1);
-var enemy7 = new enemy('none', 'regular', 1.2);
-var enemy8 = new enemy('none', 'regular', 1.3);
-var enemy9 = new enemy('none', 'regular', 1.4);
-var enemy10 = new enemy('none', 'regular', 1.5);
-var enemy11 = new enemy('none', 'regular', 1.5);
-var enemy12 = new enemy('none', 'regular', 1.5);
-var enemy13 = new enemy('none', 'regular', 1.8);
-var enemy14 = new enemy('none', 'regular', 1.8);
-var enemy15 = new enemy('none', 'regular', 2.1);
+var enemy1 = new enemy('none', 'regular', 0.05);
+var enemy2 = new enemy('none', 'regular', 0.05);
+var enemy3 = new enemy('none', 'regular', 0.05);
+var enemy4 = new enemy('none', 'regular', 0.05);
+var enemy5 = new enemy('none', 'regular', 0.05);
+var enemy6 = new enemy('none', 'regular', 0.05);
+var enemy7 = new enemy('none', 'regular', 0.05);
+var enemy8 = new enemy('none', 'regular', 0.05);
 //var enemy1 = new enemy('none', 'boss');
 
-enemies = [enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, enemy8, enemy9, enemy10, enemy11, enemy12, enemy13, enemy14, enemy15 ];
+enemies = [enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, enemy8];
 
 function stateDefinition(){
     enemies.forEach(function(item){
@@ -763,18 +757,12 @@ var hud = {
                 ctx.drawImage(layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
                 break;
             case 2:
-                ctx.fillStyle = '#fffbf9';
-                ctx.fillRect(0, 0, w, h);
                 ctx.drawImage(layer2, ssx, ssy, 2000*stageScale, 2000*stageScale);
                 break;
             case 3:
-                ctx.fillStyle = '#fffbf9';
-                ctx.fillRect(0, 0, w, h);
                 ctx.drawImage(layer3, ssx, ssy, 2000*stageScale, 2000*stageScale);
                 break;
             default:
-                ctx.fillStyle = '#fffbf9';
-                ctx.fillRect(0, 0, w, h);
                 ctx.drawImage(layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
                 break;
         }
@@ -825,7 +813,9 @@ var hud = {
 
 
 /*-----------------------SESSIONS------------------------*/
-enemy1.state = 'spawn';
+enemies.forEach(function(element){
+    element.state = 'spawn';
+});
 function main(timestamp) {
     ctx.clearRect(0, 0, w, h);
     
@@ -854,7 +844,7 @@ function main(timestamp) {
     //enemySpawn();
     
 //Layer 4th
-    //hud.stage(3);
+    hud.stage(3);
     
 //Layer top
     hud.full();
@@ -864,7 +854,7 @@ function main(timestamp) {
         playerColor = '#adedff';
     }
     
-     if (tracker.touch.enemy(enemy1)) {
+     if (tracker.touch.enemy(enemy1) && attackNorm === false && attackPush === false) {
                 health--;
                 playerColor = '#ff6d6d';
                 damaging = true;
