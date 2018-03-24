@@ -218,8 +218,8 @@ function resize() {
         // Make the canvas the same size
         c.width = cw - 18;
         c.height = ch - 22;
-        sx = (sx / w) * c.width;
-        sy = (sy / h) * c.height;
+        //sx = (sx / w) * c.width;
+        //sy = (sy / h) * c.height;
         w = c.width;
         h = c.height;
     }
@@ -809,4 +809,64 @@ var hud = {
         hud.cool();
     }
 };
+/*-----------------------------------------------*/
+
+
+/*-----------------------SESSIONS------------------------*/
+enemies.forEach(function(element){
+    element.state = 'spawn';
+});
+function main(timestamp) {
+    ctx.clearRect(0, 0, w, h);
+    
+    resize(c);
+    
+//Layer bottom
+    hud.stage(1);
+    
+    character.listen();
+    
+    character.moveChar();
+//Layer 2nd
+    hud.stage(2);
+    
+//Layer 3rd
+    stateDefinition();
+    
+    items.forEach(function(element){
+        if(tracker.touch.item(element) && element.state != 'hidden') element.disappear();
+    });
+    
+    itemDefinition();
+    
+    character.drawChar();
+    
+    //enemySpawn();
+    
+//Layer 4th
+    hud.stage(3);
+    
+//Layer top
+    hud.full();
+    
+    if (cool > 0 && regeneration === false && attackNorm === false && attackPush === false) {
+        cool-= 0.25;
+        playerColor = '#adedff';
+    }
+    
+     if (tracker.touch.enemy(enemy1) && attackNorm === false && attackPush === false) {
+                health--;
+                playerColor = '#ff6d6d';
+                damaging = true;
+                regeneration = false;
+            } else {
+                damaging = false;
+            }
+    
+    if (cool === 0 && damaging === false) {
+        playerColor = '#ffd6cc';
+    }
+    
+    if (xMain) window.requestAnimationFrame(main);
+}
 /*-----------------------------------------------*/
