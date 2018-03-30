@@ -101,9 +101,8 @@
            $('#animation').click(function() {
                $('.menu').fadeOut('slow', function() {
                    $('.window').fadeIn('slow');
-                   $('body').css("background", "black");
                    window.cancelAnimationFrame(menuAnim);
-                   window.requestAnimationFrame(main);
+                   window.requestAnimationFrame(LevelSelect);
                });
            });
        </script>

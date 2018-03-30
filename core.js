@@ -7,7 +7,9 @@ const c = document.getElementById("game");
 const ctx = c.getContext("2d");
 var w = c.width; //Canvas width
 var h = c.height; //Canvas height
-var xMain = true; //Main session
+var xSelect = true;
+var xTest = false; //Main session
+var xLevel1 = false;
 var time; //game counter
 var atime = 0; //attack counter
 var ptime = 0; //push attack counter
@@ -22,10 +24,10 @@ var playerColor = '#ffd6cc'; //Player color
 var esx = 0; //Enemy object x cordinate
 var esy = 0; //Enemy object y cordinate
 var ewx = 50; //Enemy object width
-var ewy = 50; //Enemy object height;
+var ewy = 50; //Enemy object height
 var randNum = 0;
-var colors = ['#ffd6cc', '#ffc2b3', '#ffad99', '#ff9980', '#ff9980']; //Player color strobe
-var ecolors = ['#81ea25', '#6bba27', '#96e84e', '#abf966', '#b9f981']; //Enemy color strobe
+var colors =   ['#ffd6cc', '#ffc2b3', '#ffad99', '#ff9980', '#ff9980']; //Player color strobe
+var ecolors =  ['#81ea25', '#6bba27', '#96e84e', '#abf966', '#b9f981']; //Enemy color strobe
 var ebcolors = ['#f45642', '#e06757', '#f9543e', '#dd351f', '#ed452f']; //Enemy Boss color strobe
 var rDown = false; //Right arrow or D is being pressed
 var lDown = false; //Left arrow or A
@@ -51,13 +53,24 @@ var damaging = false;
 var speed = 1.5; //Enemy speed
 var regeneration = false;
 var justRegen = false;
-const layer1 = new Image(); //Level map
-    layer1.src = "level_test/test_map.png";
 const stageScale = 5;
-const layer2 = new Image();
-    layer2.src = "level_test/test_map-2nd.png";
-const layer3 = new Image();
-    layer3.src = "level_test/test_map-3rd.png";
+
+//LEVEL_TEST
+    const test_layer1 = new Image();
+        test_layer1.src = "level_test/test_map.png";
+    const test_layer2 = new Image();
+        test_layer2.src = "level_test/test_map-2nd.png";
+    const test_layer3 = new Image();
+        test_layer3.src = "level_test/test_map-3rd.png";
+
+//Level 1
+    const lvl1_layer1 = new Image();
+        lvl1_layer1.src = "level_1/Layer_1.png";
+    const lvl1_layer2 = new Image();
+        //lvl1_layer2.src = "level_test/test_map-2nd.png";
+    const lvl1_layer3 = new Image();
+        //lvl1_layer3.src = "level_test/test_map-3rd.png";
+
 
 /*---------------HELPER FUNCTIONS---------------*/
 var random = {
@@ -205,6 +218,18 @@ var tracker = {
     inarea: function(){
         //if (((sx - (wx / 2 + r) <= enemy.esx && enemy.esx <= sx + wx + (wx / 2 + r)) && (sy - (wy / 2 + r) <= enemy.esy && enemy.esy <= sy + wy + (wy / 2 + r))) || ((sx <= enemy.esx + enemy.ewx && enemy.esx + enemy.ewx <= sx + wx + (wx / 2 + r)) && (sy <= enemy.esy + enemy.ewy && enemy.esy + enemy.ewy <= sy + wy - (wy / 2 + r)))) return true;
     },
+    
+    mousePosition:{
+        x: 0,
+        y: 0,
+        
+        get: function(event) {
+            this.x = event.x;
+            this.y = event.y;
+            this.x -= c.offsetLeft;
+            this.y -= c.offsetTop;
+        }
+    } 
 };
 
 function resize() {
@@ -749,22 +774,45 @@ function enemeySpeed(){
 
 /*---------------HEADS UP DISPLAY----------------*/
 var hud = {
-    stage: function(layer) {
-        switch(layer){
-            case 1:
-                ctx.fillStyle = '#fffbf9';
-                ctx.fillRect(0, 0, w, h);
-                ctx.drawImage(layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
-                break;
-            case 2:
-                ctx.drawImage(layer2, ssx, ssy, 2000*stageScale, 2000*stageScale);
-                break;
-            case 3:
-                ctx.drawImage(layer3, ssx, ssy, 2000*stageScale, 2000*stageScale);
-                break;
-            default:
-                ctx.drawImage(layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
-                break;
+    test:{
+        stage: function(layer) {
+            switch(layer){
+                case 1:
+                    ctx.fillStyle = '#fffbf9';
+                    ctx.fillRect(0, 0, w, h);
+                    ctx.drawImage(test_layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    break;
+                case 2:
+                    ctx.drawImage(test_layer2, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    break;
+                case 3:
+                    ctx.drawImage(test_layer3, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    break;
+                default:
+                    ctx.drawImage(test_layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    break;
+            }
+        },
+    },
+    
+    level_1:{
+        stage: function(layer) {
+            switch(layer){
+                case 1:
+                    ctx.fillStyle = '#fffbf9';
+                    ctx.fillRect(0, 0, w, h);
+                    ctx.drawImage(lvl1_layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    break;
+                case 2:
+                    ctx.drawImage(lvl1_layer2, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    break;
+                case 3:
+                    ctx.drawImage(lvl1_layer3, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    break;
+                default:
+                    ctx.drawImage(lvl1_layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    break;
+            }
         }
     },
     
@@ -816,19 +864,19 @@ var hud = {
 enemies.forEach(function(element){
     element.state = 'spawn';
 });
-function main(timestamp) {
+function LevelSession_test(timestamp) {
     ctx.clearRect(0, 0, w, h);
     
     resize(c);
     
 //Layer bottom
-    hud.stage(1);
+    hud.test.stage(1);
     
     character.listen();
     
     character.moveChar();
 //Layer 2nd
-    hud.stage(2);
+    hud.test.stage(2);
     
 //Layer 3rd
     stateDefinition();
@@ -844,7 +892,7 @@ function main(timestamp) {
     //enemySpawn();
     
 //Layer 4th
-    hud.stage(3);
+    hud.test.stage(3);
     
 //Layer top
     hud.full();
@@ -867,6 +915,122 @@ function main(timestamp) {
         playerColor = '#ffd6cc';
     }
     
-    if (xMain) window.requestAnimationFrame(main);
+    if (xTest) window.requestAnimationFrame(LevelSession_one);
+}
+
+function LevelSelect(timestamp){
+    ctx.clearRect(0, 0, w, h);
+    
+    resize(c);
+    
+    if(w >= 1000){
+        //corners
+        ctx.fillStyle = 'black';
+        ctx.fillRect(5, 5, 30, 100);
+        ctx.fillRect(5, 5, 100, 30);
+        
+        ctx.fillRect(5, h - 105, 30, 100);
+        ctx.fillRect(5, h - 35, 100, 30);
+        
+        ctx.fillRect(w - 105, 5, 100, 30);
+        ctx.fillRect(w - 35, 5, 30, 100);
+        
+        ctx.fillRect(w - 105, h - 35, 100, 30);
+        ctx.fillRect(w - 35, h - 105, 30, 100);
+        
+        //levels
+        ctx.fillStyle = '#ffd6cc';
+        ctx.fillRect(w/2 - 150, h/2 - 150, 300, 300);
+        
+        ctx.fillRect(w/2 - 480, h/2 - 150, 300, 300);
+        
+        ctx.fillRect(w/2 + 180, h/2 - 150, 300, 300);
+    } else {
+        //corners
+        ctx.fillStyle = 'black';
+        ctx.fillRect(5, 5, 10, 35);
+        ctx.fillRect(5, 5, 35, 10);
+        
+        ctx.fillRect(5, h - 40, 10, 35);
+        ctx.fillRect(5, h - 15, 35, 10);
+        
+        ctx.fillRect(w - 40, 5, 35, 10);
+        ctx.fillRect(w - 15, 5, 10, 35);
+        
+        ctx.fillRect(w - 40, h - 15, 35, 10);
+        ctx.fillRect(w - 15, h - 40, 10, 35);
+        
+        //levels
+        ctx.fillStyle = '#ffd6cc';
+        ctx.fillRect(w/2 - 125, h/2 - 125, 250, 250);
+        
+        ctx.fillRect(w/2 - 125, h/2 - 405, 250, 250);
+        
+        ctx.fillRect(w/2 - 125, h/2 + 155, 250, 250);
+    }
+    //$('body').css("background", "black");
+    
+    c.addEventListener("mousedown", tracker.mousePosition.get, false);
+    
+    ctx.fillStyle = 'black';
+    ctx.font = "50px monospace";
+    //ctx.fillText(tracker.mousePosition.x + "  " + tracker.mousePosition.y, w/2, h/2);
+    
+    if (xSelect) window.requestAnimationFrame(LevelSelect);
+}
+
+function LevelSession_one(timestamp) {
+    ctx.clearRect(0, 0, w, h);
+    
+    resize(c);
+    
+//Layer bottom
+    hud.level_1.stage(1);
+    
+    character.listen();
+    
+    character.moveChar();
+    
+//Layer 2nd
+    hud.level_1.stage(2);
+    
+//Layer 3rd
+    stateDefinition();
+    
+    items.forEach(function(element){
+        if(tracker.touch.item(element) && element.state != 'hidden') element.disappear();
+    });
+    
+    itemDefinition();
+    
+    character.drawChar();
+    
+    //enemySpawn();
+    
+//Layer 4th
+    hud.level_1.stage(3);
+    
+//Layer top
+    hud.full();
+    
+    if (cool > 0 && regeneration === false && attackNorm === false && attackPush === false) {
+        cool-= 0.25;
+        playerColor = '#adedff';
+    }
+    
+     if (tracker.touch.enemy(enemy1) && attackNorm === false && attackPush === false) {
+            health--;
+            playerColor = '#ff6d6d';
+            damaging = true;
+            regeneration = false;
+     } else {
+         damaging = false;
+     }
+    
+    if (cool === 0 && damaging === false) {
+        playerColor = '#ffd6cc';
+    }
+    
+    if (xLevel1) window.requestAnimationFrame(LevelSession_one);
 }
 /*-----------------------------------------------*/
