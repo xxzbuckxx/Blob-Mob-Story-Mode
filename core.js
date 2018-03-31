@@ -224,10 +224,10 @@ var tracker = {
         y: 0,
         
         get: function(event) {
-            this.x = event.x;
-            this.y = event.y;
-            this.x -= c.offsetLeft;
-            this.y -= c.offsetTop;
+            tracker.mousePosition.x = event.x;
+            tracker.mousePosition.y = event.y;
+            tracker.mousePosition.x -= c.offsetLeft;
+            tracker.mousePosition.y -= c.offsetTop;
         }
     } 
 };
@@ -915,7 +915,7 @@ function LevelSession_test(timestamp) {
         playerColor = '#ffd6cc';
     }
     
-    if (xTest) window.requestAnimationFrame(LevelSession_one);
+    if (xTest) window.requestAnimationFrame(LevelSession_test);
 }
 
 function LevelSelect(timestamp){
@@ -968,13 +968,20 @@ function LevelSelect(timestamp){
         
         ctx.fillRect(w/2 - 125, h/2 + 155, 250, 250);
     }
-    //$('body').css("background", "black");
     
     c.addEventListener("mousedown", tracker.mousePosition.get, false);
     
     ctx.fillStyle = 'black';
     ctx.font = "50px monospace";
-    //ctx.fillText(tracker.mousePosition.x + "  " + tracker.mousePosition.y, w/2, h/2);
+    ctx.fillText(tracker.mousePosition.x + " " + tracker.mousePosition.y, 20, 60);
+    
+    if(tracker.mousePosition.x > w / 2 - 150 && tracker.mousePosition.y < w / 2 + 150){
+        xSelect = false;
+        window.cancelAnimationFrame(LevelSelect);
+        xTest = true;
+        window.requestAnimationFrame(LevelSession_test);
+        $('body').css("background", "black");
+    }
     
     if (xSelect) window.requestAnimationFrame(LevelSelect);
 }
