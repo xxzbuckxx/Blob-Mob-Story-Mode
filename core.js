@@ -866,7 +866,7 @@ enemies.forEach(function(element){
 });
 function LevelSession_test(timestamp) {
     ctx.clearRect(0, 0, w, h);
-    
+    $('body').css("background", "black");
     resize(c);
     
 //Layer bottom
@@ -903,13 +903,11 @@ function LevelSession_test(timestamp) {
     }
     
      if (tracker.touch.enemy(enemy1) && attackNorm === false && attackPush === false) {
-                health--;
-                playerColor = '#ff6d6d';
-                damaging = true;
-                regeneration = false;
-            } else {
-                damaging = false;
-            }
+         health--;
+         playerColor = '#ff6d6d';
+         damaging = true;
+         regeneration = false;
+     } else damaging = false;
     
     if (cool === 0 && damaging === false) {
         playerColor = '#ffd6cc';
@@ -922,6 +920,8 @@ function LevelSelect(timestamp){
     ctx.clearRect(0, 0, w, h);
     
     resize(c);
+    
+    c.addEventListener("mousedown", tracker.mousePosition.get, false);
     
     if(w >= 1000){
         //corners
@@ -940,11 +940,25 @@ function LevelSelect(timestamp){
         
         //levels
         ctx.fillStyle = '#ffd6cc';
-        ctx.fillRect(w/2 - 150, h/2 - 150, 300, 300);
         
         ctx.fillRect(w/2 - 480, h/2 - 150, 300, 300);
         
+        ctx.fillRect(w/2 - 150, h/2 - 150, 300, 300);
+        
         ctx.fillRect(w/2 + 180, h/2 - 150, 300, 300);
+        
+        ctx.fillStyle = 'black';
+        ctx.font = "50px monospace";
+        ctx.fillText(tracker.mousePosition.x + " " + tracker.mousePosition.y, 20, 60);
+        
+        //Select Tracker
+        if(tracker.mousePosition.x > w / 2 - 480 && tracker.mousePosition.x < w / 2 - 180){
+            xSelect = false;
+            window.cancelAnimationFrame(LevelSelect);
+            xLevel1 = true;
+            window.requestAnimationFrame(LevelSession_one);
+            ssy = 200;
+        }
     } else {
         //corners
         ctx.fillStyle = 'black';
@@ -962,25 +976,12 @@ function LevelSelect(timestamp){
         
         //levels
         ctx.fillStyle = '#ffd6cc';
-        ctx.fillRect(w/2 - 125, h/2 - 125, 250, 250);
         
         ctx.fillRect(w/2 - 125, h/2 - 405, 250, 250);
         
+        ctx.fillRect(w/2 - 125, h/2 - 125, 250, 250);
+        
         ctx.fillRect(w/2 - 125, h/2 + 155, 250, 250);
-    }
-    
-    c.addEventListener("mousedown", tracker.mousePosition.get, false);
-    
-    ctx.fillStyle = 'black';
-    ctx.font = "50px monospace";
-    ctx.fillText(tracker.mousePosition.x + " " + tracker.mousePosition.y, 20, 60);
-    
-    if(tracker.mousePosition.x > w / 2 - 150 && tracker.mousePosition.y < w / 2 + 150){
-        xSelect = false;
-        window.cancelAnimationFrame(LevelSelect);
-        xTest = true;
-        window.requestAnimationFrame(LevelSession_test);
-        $('body').css("background", "black");
     }
     
     if (xSelect) window.requestAnimationFrame(LevelSelect);
@@ -988,7 +989,7 @@ function LevelSelect(timestamp){
 
 function LevelSession_one(timestamp) {
     ctx.clearRect(0, 0, w, h);
-    
+    $('body').css("background", "black");
     resize(c);
     
 //Layer bottom
