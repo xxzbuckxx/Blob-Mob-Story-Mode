@@ -648,7 +648,7 @@ function enemy(state, type, enemspeed){
         this.ewy -= 0.5;
         this.esx += 0.1;
         this.esy += 0.1;
-
+		ctx.beginPath();
         
         ctx.fillStyle = 'black';
         //Draws Body
@@ -944,7 +944,17 @@ function LevelSelect(timestamp){
 		ctx.strokeRect(w/2 - 490, h/2 - 160, 320, 320);
         ctx.fillRect(w/2 - 480, h/2 - 150, 300, 300);
 		
+		ctx.fillStyle = '#fff9fc';
+		ctx.beginPath();
+		ctx.moveTo(w/2 - 495, h/2 - 165);
+		ctx.lineTo(w/2 - 450, h/2 - 165);
+		ctx.lineTo(w/2 - 495, h/2 - 130);
+		ctx.lineTo(w/2 - 495, h/2 - 165);
+		ctx.fill();
+		ctx.stroke();
+		ctx.closePath();
 		
+		ctx.fillStyle = '#ffd6cc';
         ctx.strokeRect(w/2 - 155, h/2 - 155, 310, 310);
         ctx.strokeRect(w/2 - 160, h/2 - 160, 320, 320);
         ctx.fillRect(w/2 - 150, h/2 - 150, 300, 300);
