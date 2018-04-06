@@ -424,9 +424,9 @@ var character = {
         else if (atime > 20 && recent == 'up' && tracker.edgeDetect('up', sx, sy, wx, wy)) sy += 3;
         else if (atime > 20 && recent == 'down' && tracker.edgeDetect('down', sx, sy, wx, wy)) sy -= 3;
         
-        /*enemies.forEach(function(item, index, arr){
-            if (atime == 5 && tracker.touch.enemy(item) && item.state != 'dead') arr[index].state = 'dying';
-        });*/
+        enemies.forEach(function(item){
+            if (atime == 20 && tracker.touch.enemy(item) && item.state != 'dead') item.state = 'dying';
+        });
         
         if(atime == 20 && tracker.touch.enemy(enemy1) && enemy.state != 'dead') enemy1.state = 'dying';
         
@@ -456,10 +456,9 @@ var character = {
             r += 3;
             cool += 0.75;
         } else if (80 <= ptime && ptime < 130) {
-            /*enemies.forEach(function(item, index, arr){
-                arr[index].state = 'push';
-            });*/
-            enemy1.state = 'push';
+            enemies.forEach(function(item){
+                item.state = 'push';
+            });
             
             power -= 0.5;
             r += 4;
@@ -474,10 +473,9 @@ var character = {
             attackPush = false;
             pushDraw = false;
             
-            /*enemies.forEach(function(item, index, arr){
-                arr[index].state = 'alive';
-            });*/
-            enemy1.state = 'alive';
+            enemies.forEach(function(item){
+                item.state = 'alive';
+            });
         } /*else if (tracker.collide()) {
             attackPush = false;
             //shrink();
@@ -924,7 +922,7 @@ function LevelSelect(timestamp){
     c.addEventListener("mousedown", tracker.mousePosition.get, false);
     
     if(w >= 1000){
-        //corners
+        //big corners
         ctx.fillStyle = 'black';
         ctx.fillRect(5, 5, 30, 100);
         ctx.fillRect(5, 5, 100, 30);
@@ -940,24 +938,36 @@ function LevelSelect(timestamp){
         
         //levels
         ctx.fillStyle = '#ffd6cc';
-        
+        ctx.strokeStyle = 'black';
+		
+		ctx.strokeRect(w/2 - 485, h/2 - 155, 310, 310);
+		ctx.strokeRect(w/2 - 490, h/2 - 160, 320, 320);
         ctx.fillRect(w/2 - 480, h/2 - 150, 300, 300);
-        
+		
+		
+        ctx.strokeRect(w/2 - 155, h/2 - 155, 310, 310);
+        ctx.strokeRect(w/2 - 160, h/2 - 160, 320, 320);
         ctx.fillRect(w/2 - 150, h/2 - 150, 300, 300);
         
+		
+        ctx.strokeRect(w/2 + 175, h/2 - 155, 310, 310);
+        ctx.strokeRect(w/2 + 170, h/2 - 160, 320, 320);
         ctx.fillRect(w/2 + 180, h/2 - 150, 300, 300);
+		
+		
         
+		/* test
         ctx.fillStyle = 'black';
         ctx.font = "50px monospace";
         ctx.fillText(tracker.mousePosition.x + " " + tracker.mousePosition.y, 20, 60);
-        
+        */
+		
         //Select Tracker
         if(tracker.mousePosition.x > w / 2 - 480 && tracker.mousePosition.x < w / 2 - 180){
             xSelect = false;
             window.cancelAnimationFrame(LevelSelect);
-            xLevel1 = true;
-            window.requestAnimationFrame(LevelSession_one);
-            ssy = 200;
+            xTest = true;
+            window.requestAnimationFrame(LevelSession_test);
         }
     } else {
         //corners
