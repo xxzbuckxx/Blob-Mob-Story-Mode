@@ -950,6 +950,21 @@ function LevelSelect(timestamp){
 		ctx.lineTo(w/2 - 450, h/2 - 165);
 		ctx.lineTo(w/2 - 495, h/2 - 130);
 		ctx.lineTo(w/2 - 495, h/2 - 165);
+		
+		ctx.moveTo(w/2 - 165, h/2 - 165);
+		ctx.lineTo(w/2 - 210, h/2 - 165);
+		ctx.lineTo(w/2 - 165, h/2 - 130);
+		ctx.lineTo(w/2 - 165, h/2 - 165);
+		
+		ctx.moveTo(w/2 - 495, h/2 + 165);
+		ctx.lineTo(w/2 - 450, h/2 + 165);
+		ctx.lineTo(w/2 - 495, h/2 + 130);
+		ctx.lineTo(w/2 - 495, h/2 + 165);
+
+		ctx.moveTo(w/2 - 165, h/2 + 165);
+		ctx.lineTo(w/2 - 210, h/2 + 165);
+		ctx.lineTo(w/2 - 165, h/2 + 130);
+		ctx.lineTo(w/2 - 165, h/2 + 165);
 		ctx.fill();
 		ctx.stroke();
 		ctx.closePath();
