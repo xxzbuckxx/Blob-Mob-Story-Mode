@@ -937,47 +937,100 @@ function LevelSelect(timestamp){
         ctx.fillRect(w - 35, h - 105, 30, 100);
         
         //levels
+            //Left
         ctx.fillStyle = '#ffd6cc';
         ctx.strokeStyle = 'black';
 		
-		ctx.strokeRect(w/2 - 485, h/2 - 155, 310, 310);
-		ctx.strokeRect(w/2 - 490, h/2 - 160, 320, 320);
-        ctx.fillRect(w/2 - 480, h/2 - 150, 300, 300);
+		ctx.strokeRect(w/2 - 495, h/2 - 155, 310, 310);
+		ctx.strokeRect(w/2 - 500, h/2 - 160, 320, 320);
+        ctx.fillRect(w/2 - 490, h/2 - 150, 300, 300);
 		
 		ctx.fillStyle = '#fff9fc';
 		ctx.beginPath();
-		ctx.moveTo(w/2 - 495, h/2 - 165);
-		ctx.lineTo(w/2 - 450, h/2 - 165);
-		ctx.lineTo(w/2 - 495, h/2 - 130);
-		ctx.lineTo(w/2 - 495, h/2 - 165);
+		ctx.moveTo(w/2 - 505, h/2 - 165);
+		ctx.lineTo(w/2 - 465, h/2 - 165);
+		ctx.lineTo(w/2 - 505, h/2 - 130);
+		ctx.lineTo(w/2 - 505, h/2 - 165);
 		
-		ctx.moveTo(w/2 - 165, h/2 - 165);
-		ctx.lineTo(w/2 - 210, h/2 - 165);
-		ctx.lineTo(w/2 - 165, h/2 - 130);
-		ctx.lineTo(w/2 - 165, h/2 - 165);
+		ctx.moveTo(w/2 - 175, h/2 - 165);
+		ctx.lineTo(w/2 - 220, h/2 - 165);
+		ctx.lineTo(w/2 - 175, h/2 - 130);
+		ctx.lineTo(w/2 - 175, h/2 - 165);
 		
-		ctx.moveTo(w/2 - 495, h/2 + 165);
-		ctx.lineTo(w/2 - 450, h/2 + 165);
-		ctx.lineTo(w/2 - 495, h/2 + 130);
-		ctx.lineTo(w/2 - 495, h/2 + 165);
+		ctx.moveTo(w/2 - 505, h/2 + 165);
+		ctx.lineTo(w/2 - 460, h/2 + 165);
+		ctx.lineTo(w/2 - 505, h/2 + 130);
+		ctx.lineTo(w/2 - 505, h/2 + 165);
 
-		ctx.moveTo(w/2 - 165, h/2 + 165);
-		ctx.lineTo(w/2 - 210, h/2 + 165);
-		ctx.lineTo(w/2 - 165, h/2 + 130);
-		ctx.lineTo(w/2 - 165, h/2 + 165);
+		ctx.moveTo(w/2 - 175, h/2 + 165);
+		ctx.lineTo(w/2 - 220, h/2 + 165);
+		ctx.lineTo(w/2 - 175, h/2 + 130);
+		ctx.lineTo(w/2 - 175, h/2 + 165);
 		ctx.fill();
 		ctx.stroke();
 		ctx.closePath();
 		
+            //Center
 		ctx.fillStyle = '#ffd6cc';
         ctx.strokeRect(w/2 - 155, h/2 - 155, 310, 310);
         ctx.strokeRect(w/2 - 160, h/2 - 160, 320, 320);
         ctx.fillRect(w/2 - 150, h/2 - 150, 300, 300);
         
+        ctx.fillStyle = '#fff9fc';
+        ctx.beginPath();
+        ctx.moveTo(w/2 - 165, h/2 - 165);
+        ctx.lineTo(w/2 - 120, h/2 - 165);
+        ctx.lineTo(w/2 - 165, h/2 - 130);
+        ctx.lineTo(w/2 - 165, h/2 - 165);
+        
+        ctx.moveTo(w/2 + 165, h/2 - 165);
+		ctx.lineTo(w/2 + 120, h/2 - 165);
+		ctx.lineTo(w/2 + 165, h/2 - 130);
+		ctx.lineTo(w/2 + 165, h/2 - 165);
 		
-        ctx.strokeRect(w/2 + 175, h/2 - 155, 310, 310);
-        ctx.strokeRect(w/2 + 170, h/2 - 160, 320, 320);
-        ctx.fillRect(w/2 + 180, h/2 - 150, 300, 300);
+		ctx.moveTo(w/2 - 165, h/2 + 165);
+        ctx.lineTo(w/2 - 120, h/2 + 165);
+        ctx.lineTo(w/2 - 165, h/2 + 130);
+        ctx.lineTo(w/2 - 165, h/2 + 165);
+        
+        ctx.moveTo(w/2 + 165, h/2 + 165);
+		ctx.lineTo(w/2 + 120, h/2 + 165);
+		ctx.lineTo(w/2 + 165, h/2 + 130);
+		ctx.lineTo(w/2 + 165, h/2 + 165);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+        
+            //Right
+        ctx.fillStyle = '#ffd6cc';
+        ctx.strokeRect(w/2 + 185, h/2 - 155, 310, 310);
+        ctx.strokeRect(w/2 + 180, h/2 - 160, 320, 320);
+        ctx.fillRect(w/2 + 190, h/2 - 150, 300, 300);
+        
+        ctx.fillStyle = '#fff9fc';
+		ctx.beginPath();
+		ctx.moveTo(w/2 - 505, h/2 - 165);
+		ctx.lineTo(w/2 - 465, h/2 - 165);
+		ctx.lineTo(w/2 - 505, h/2 - 130);
+		ctx.lineTo(w/2 - 505, h/2 - 165);
+		
+		ctx.moveTo(w/2 - 175, h/2 - 165);
+		ctx.lineTo(w/2 - 220, h/2 - 165);
+		ctx.lineTo(w/2 - 175, h/2 - 130);
+		ctx.lineTo(w/2 - 175, h/2 - 165);
+		
+		ctx.moveTo(w/2 - 505, h/2 + 165);
+		ctx.lineTo(w/2 - 460, h/2 + 165);
+		ctx.lineTo(w/2 - 505, h/2 + 130);
+		ctx.lineTo(w/2 - 505, h/2 + 165);
+
+		ctx.moveTo(w/2 - 175, h/2 + 165);
+		ctx.lineTo(w/2 - 220, h/2 + 165);
+		ctx.lineTo(w/2 - 175, h/2 + 130);
+		ctx.lineTo(w/2 - 175, h/2 + 165);
+		ctx.fill();
+		ctx.stroke();
+		ctx.closePath();
 		
 		
         
