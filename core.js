@@ -309,10 +309,10 @@ var character = {
         
     },
     
-    moveChar: function() {
+    moveChar: function(dem) {
         if(slisten){
             if (dDown && regeneration === false && tracker.edgeDetect('down', sx, sy, wx, wy)) {
-                if(sy >= h/2 - wy && (ssy + h*stageScale > h)){
+                if(sy >= h/2 - wy && (ssy + dem.h*stageScale > h)){
                     ssy -= speed; //Move Background up
                 } else {
                     sy += speed;
@@ -321,7 +321,7 @@ var character = {
                 recent = 'down';
             }
             if (rDown && regeneration === false && tracker.edgeDetect('right', sx, sy, wx, wy)) {
-                if((sx >= w/2-wx) && (ssx + w*stageScale > w)){
+                if((sx >= w/2-wx) && (ssx + dem.w*stageScale > w)){
                     ssx -= speed; //Move Background left
                 } else {
                     sx += speed;
@@ -778,19 +778,23 @@ var hud = {
                 case 1:
                     ctx.fillStyle = '#fffbf9';
                     ctx.fillRect(0, 0, w, h);
-                    ctx.drawImage(test_layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    ctx.drawImage(test_layer1, ssx, ssy, test_layer1.width*stageScale, test_layer1.height*stageScale);
                     break;
                 case 2:
-                    ctx.drawImage(test_layer2, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    ctx.drawImage(test_layer2, ssx, ssy, test_layer2.width*stageScale, test_layer2.height*stageScale);
                     break;
                 case 3:
-                    ctx.drawImage(test_layer3, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    ctx.drawImage(test_layer3, ssx, ssy, test_layer3.width*stageScale, test_layer3.height*stageScale);
                     break;
                 default:
-                    ctx.drawImage(test_layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    ctx.drawImage(test_layer1, ssx, ssy, test_layer1.width*stageScale, test_layer1.height*stageScale);
                     break;
             }
         },
+        
+        h: test_layer1.height,
+        
+        w: test_layer1.width,
     },
     
     level_1:{
@@ -799,19 +803,23 @@ var hud = {
                 case 1:
                     ctx.fillStyle = '#fffbf9';
                     ctx.fillRect(0, 0, w, h);
-                    ctx.drawImage(lvl1_layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    ctx.drawImage(lvl1_layer1, ssx, ssy, lvl1_layer1.width*stageScale, lvl1_layer1.height*stageScale);
                     break;
                 case 2:
-                    ctx.drawImage(lvl1_layer2, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    ctx.drawImage(lvl1_layer2, ssx, ssy, lvl1_layer2.width*stageScale, lvl1_layer2.height*stageScale);
                     break;
                 case 3:
-                    ctx.drawImage(lvl1_layer3, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    ctx.drawImage(lvl1_layer3, ssx, ssy, lvl1_layer3.width*stageScale, lvl1_layer3.height*stageScale);
                     break;
                 default:
-                    ctx.drawImage(lvl1_layer1, ssx, ssy, 2000*stageScale, 2000*stageScale);
+                    ctx.drawImage(lvl1_layer1, ssx, ssy, lvl1_layer1.width*stageScale, lvl1_layer1.height*stageScale);
                     break;
             }
-        }
+        },
+        
+        h: lvl1_layer1.height,
+        
+        w: lvl1_layer1.width,
     },
     
     health: function() {
@@ -872,7 +880,7 @@ function LevelSession_test(timestamp) {
     
     character.listen();
     
-    character.moveChar();
+    character.moveChar(hud.test);
 //Layer 2nd
     hud.test.stage(2);
     
@@ -1044,8 +1052,10 @@ function LevelSelect(timestamp){
         if(tracker.mousePosition.x > w / 2 - 480 && tracker.mousePosition.x < w / 2 - 180){
             xSelect = false;
             window.cancelAnimationFrame(LevelSelect);
-            xTest = true;
-            window.requestAnimationFrame(LevelSession_test);
+            //xTest = true;
+            //window.requestAnimationFrame(LevelSession_test);
+            xLevel1 = true;
+            window.requestAnimationFrame(LevelSession_one);
         }
     } else {
         //corners
@@ -1085,7 +1095,7 @@ function LevelSession_one(timestamp) {
     
     character.listen();
     
-    character.moveChar();
+    character.moveChar(hud.level_1);
     
 //Layer 2nd
     hud.level_1.stage(2);
