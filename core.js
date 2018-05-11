@@ -1,5 +1,6 @@
 /* jshint browser: true */
 /* jshint esversion: 6  */
+/*globals $:false */
 
 //DEVELOPED BY ZACK TRACZYK
 
@@ -53,7 +54,7 @@ var damaging = false;
 var speed = 1.5; //Enemy speed
 var regeneration = false;
 var justRegen = false;
-const stageScale = 5;
+var stageScale = 5;
 
 //LEVEL_TEST
     const test_layer1 = new Image();
@@ -228,6 +229,11 @@ var tracker = {
             tracker.mousePosition.y = event.y;
             tracker.mousePosition.x -= c.offsetLeft;
             tracker.mousePosition.y -= c.offsetTop;
+        },
+        
+        reset: function(){
+            this.x = 0;
+            this.y = 0;
         }
     } 
 };
@@ -258,10 +264,12 @@ function ItemPow(x, y, state){
         
     this.iy = y;
     
+    this.a = 1;
+    
     this.state = state;
     
     this.draw = function(){
-        ctx.fillStyle = '#33cc33';
+        ctx.fillStyle = 'rgba(73, 242, 71, ' + this.a + ')';
         ctx.strokeStyle = 'black';
         ctx.fillRect(ssx + this.ix*stageScale,ssy + this.iy*stageScale,10*stageScale,10*stageScale);
         ctx.strokeRect(ssx + this.ix*stageScale,ssy + this.iy*stageScale,10*stageScale,10*stageScale);
@@ -276,6 +284,10 @@ function ItemPow(x, y, state){
     
     this.stateDef = function(){
         if(this.state == 'visible') this.draw();
+        else if(this.state == 'hidden' && this.a > 0){
+            this.a -= 0.1;
+            this.draw();
+        }
     };
 }
 /*-----------------------------------------------*/
@@ -1017,30 +1029,28 @@ function LevelSelect(timestamp){
         
         ctx.fillStyle = '#fff9fc';
 		ctx.beginPath();
-		ctx.moveTo(w/2 - 505, h/2 - 165);
-		ctx.lineTo(w/2 - 465, h/2 - 165);
-		ctx.lineTo(w/2 - 505, h/2 - 130);
-		ctx.lineTo(w/2 - 505, h/2 - 165);
+		ctx.moveTo(w/2 + 505, h/2 - 165);
+		ctx.lineTo(w/2 + 465, h/2 - 165);
+		ctx.lineTo(w/2 + 505, h/2 - 130);
+		ctx.lineTo(w/2 + 505, h/2 - 165);
 		
-		ctx.moveTo(w/2 - 175, h/2 - 165);
-		ctx.lineTo(w/2 - 220, h/2 - 165);
-		ctx.lineTo(w/2 - 175, h/2 - 130);
-		ctx.lineTo(w/2 - 175, h/2 - 165);
+		ctx.moveTo(w/2 + 175, h/2 - 165);
+		ctx.lineTo(w/2 + 220, h/2 - 165);
+		ctx.lineTo(w/2 + 175, h/2 - 130);
+		ctx.lineTo(w/2 + 175, h/2 - 165);
 		
-		ctx.moveTo(w/2 - 505, h/2 + 165);
-		ctx.lineTo(w/2 - 460, h/2 + 165);
-		ctx.lineTo(w/2 - 505, h/2 + 130);
-		ctx.lineTo(w/2 - 505, h/2 + 165);
+		ctx.moveTo(w/2 + 505, h/2 + 165);
+		ctx.lineTo(w/2 + 460, h/2 + 165);
+		ctx.lineTo(w/2 + 505, h/2 + 130);
+		ctx.lineTo(w/2 + 505, h/2 + 165);
 
-		ctx.moveTo(w/2 - 175, h/2 + 165);
-		ctx.lineTo(w/2 - 220, h/2 + 165);
-		ctx.lineTo(w/2 - 175, h/2 + 130);
-		ctx.lineTo(w/2 - 175, h/2 + 165);
+		ctx.moveTo(w/2 + 175, h/2 + 165);
+		ctx.lineTo(w/2 + 220, h/2 + 165);
+		ctx.lineTo(w/2 + 175, h/2 + 130);
+		ctx.lineTo(w/2 + 175, h/2 + 165);
 		ctx.fill();
 		ctx.stroke();
 		ctx.closePath();
-		
-		
         
 		/* test
         ctx.fillStyle = 'black';
@@ -1075,11 +1085,27 @@ function LevelSelect(timestamp){
         //levels
         ctx.fillStyle = '#ffd6cc';
         
-        ctx.fillRect(w/2 - 125, h/2 - 405, 250, 250);
+        ctx.fillRect(w/2 - h/8, 0 + h/16, h/4, h/4);
         
-        ctx.fillRect(w/2 - 125, h/2 - 125, 250, 250);
+        ctx.fillRect(w/2 - h/8, h/2 - h/8, h/4, h/4);
         
-        ctx.fillRect(w/2 - 125, h/2 + 155, 250, 250);
+        ctx.fillRect(w/2 - h/8, h - h/4 - h/16, h/4, h/4);
+        
+        /* test
+        ctx.fillStyle = 'black';
+        ctx.font = "50px monospace";
+        ctx.fillText(tracker.mousePosition.x + " " + tracker.mousePosition.y, 20, 60);
+        */
+        
+        if(tracker.mousePosition.x > w/2 - h/8 && tracker.mousePosition.x < w/2 + h/8){
+            xSelect = false;
+            window.cancelAnimationFrame(LevelSelect);
+            //xTest = true;
+            //window.requestAnimationFrame(LevelSession_test);
+            xTest = true;
+            stageScale = 2;
+            window.requestAnimationFrame(LevelSession_test);
+        }
     }
     
     if (xSelect) window.requestAnimationFrame(LevelSelect);
